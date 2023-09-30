@@ -1,0 +1,35 @@
+{
+  "name": "appjs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm run prod",
+    "server": "node ./bin/www",
+    "dev": "NODE_ENV=development npm run server",
+    "prod": "NODE_ENV=production npm run server",
+    "watch:dev": "nodemon"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "^4.18.2",
+    "express-openapi-validator": "^5.0.6",
+    "morgan": "~1.9.1",
+    "nodemon": "^3.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "nodemonConfig": {
+    "exec": "npm run dev",
+    "watch": [
+      "app.js",
+      "routes/*",
+      "public/*"
+    ],
+    "ignore": [
+      "**/__tests__/**",
+      "*.test.js",
+      "*.spec.js"
+    ]
+  }
+}
