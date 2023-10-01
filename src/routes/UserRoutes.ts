@@ -10,6 +10,30 @@ import { IReq, IRes } from './types/express/misc';
 /**
  * Get all users.
  */
+
+/**
+ * @openapi
+ *
+ * /api/users/all:
+ *   get:
+ *     tags:
+ *     - user
+ *     summary: Logs out the current logged-in user session
+ *     description: "This is a sample description for the endpoint."  # Updated description here
+ *     operationId: logoutUser
+ *     parameters:
+ *     - name: username
+ *       in: query   # Set the parameter location to 'query'
+ *       description: 'The name that needs to be fetched. Use user1 for testing. '
+ *       required: true
+ *       schema:
+ *         type: string
+ *     responses:
+ *       default:
+ *         description: successful operation
+ */
+
+
 async function getAll(_: IReq, res: IRes) {
   const users = await UserService.getAll();
   return res.status(HttpStatusCodes.OK).json({ users });

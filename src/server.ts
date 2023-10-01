@@ -14,6 +14,8 @@ import fs from 'fs';
 // OPENAPI 
 import * as swaggerUi from 'swagger-ui-express';
 // import * as OpenApiValidator from 'express-openapi-validator';
+import swaggerJSDoc from 'swagger-jsdoc';
+
 
 
 import 'express-async-errors';
@@ -54,14 +56,17 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 // docs
 const spec = path.join(__dirname, './api-doc.yml');
 
-const swaggerDocument: swaggerUi.JsonObject = yaml.load(fs.readFileSync(spec, 'utf8')) as swaggerUi.JsonObject;
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerOptions: swaggerUi.JsonObject = yaml.load(fs.readFileSync(spec, 'utf8')) as swaggerUi.JsonObject;
+
+const openapiSpecification = swaggerJSDoc(swaggerOptions);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 // // Initialize express-openapi-validator middleware
 // app.use(
 //   OpenApiValidator.middleware({
-//     apiSpec: spec, // Path to your OpenAPI specification
+//     apiSpec: openapiSpecification, // Path to your OpenAPI specification
 //     // validateResponses: true,
 //     validateRequests: true,
 //   }),
