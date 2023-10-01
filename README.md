@@ -3,6 +3,16 @@
 This project was created with [express-generator-typescript](https://github.com/seanpmaxwell/express-generator-typescript).
 
 
+## Documentation OpenApi
+
+### Defining paths
+
+Paths can be defined inside the routes, before each function
+
+### Defining comoponents
+
+It can be done inside the model
+
 ## Available Scripts
 
 ### `npm run dev`

@@ -11,6 +11,33 @@ export enum UserRoles {
 
 // **** Types **** //
 
+/**
+ * @openapi
+ * 
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           format: int64
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *         pwdHash:
+ *           type: string
+ *         role:
+ *            type: integer
+ *            format: int64
+ *       required:
+ *         - id
+ *         - name
+ *         - email
+ */
+
+
 export interface IUser {
   id: number;
   name: string;
