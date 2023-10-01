@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.0
+paths:
+  /api/users/all:
+    get:
+      tags:
+      - user
+      summary: Logs out the current logged-in user session
+      description: ""
+      operationId: logoutUser
+      parameters:
+      - name: username
+        in: query   # Set the parameter location to 'query'
+        description: 'The name that needs to be fetched. Use user1 for testing. '
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          description: successful operation
+      x-swagger-router-controller: User

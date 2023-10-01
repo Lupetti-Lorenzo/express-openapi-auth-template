@@ -1,0 +1,19 @@
+// prima cosa commentare app.js
+
+adesso fare un mock server e una api un minimo sensata, giusto per poter fare qualche operazione 
+aggiungere auth - jwt e sessione
+ e cors
+ usare ts se nonon posso mettere async await e convertire in exports
+ basterebbe compilare tutto routes e app.jse bin
+ andare di express generator typescript
+
+dopo l'api commentare anche quella
+
+--- per arricchire la doc vedere https://editor.swagger.io/
+---- per dare descrizione ai tag
+ tags:
+  - name: pet
+    description: Everything about your Pets
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io

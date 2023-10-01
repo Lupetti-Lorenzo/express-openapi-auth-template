@@ -1,0 +1,9 @@
+sean.maxwell@gmail.com
+Password@1
+
+aggiungere una nuova path, anche stupida senza database e vedere il workflow come viene
+serve la funzione per creare un nuovo user
+
+far fare watch anche a yaml doc
+
+come distingue admin da non admin?
