@@ -13,6 +13,7 @@ export default {
   Users: {
     Base: '/users',
     Get: '/all',
+    GetById: '/:id',
     Add: '/add',
     Update: '/update',
     Delete: '/delete/:id',

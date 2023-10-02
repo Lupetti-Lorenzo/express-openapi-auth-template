@@ -14,6 +14,7 @@ import fs from 'fs';
 // OPENAPI 
 import * as swaggerUi from 'swagger-ui-express';
 // import * as OpenApiValidator from 'express-openapi-validator';
+// import { OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
 import swaggerJSDoc from 'swagger-jsdoc';
 
 
@@ -28,7 +29,6 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 
 import { NodeEnvs } from '@src/constants/misc';
 import { RouteError } from '@src/other/classes';
-
 
 // **** Variables **** //
 
@@ -53,9 +53,8 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
   app.use(helmet());
 }
 
-// docs
+// OPENAPI
 const spec = path.join(__dirname, './api-doc.yml');
-
 
 const swaggerOptions: swaggerUi.JsonObject = yaml.load(fs.readFileSync(spec, 'utf8')) as swaggerUi.JsonObject;
 
@@ -66,11 +65,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 // // Initialize express-openapi-validator middleware
 // app.use(
 //   OpenApiValidator.middleware({
-//     apiSpec: openapiSpecification, // Path to your OpenAPI specification
-//     // validateResponses: true,
+//     apiSpec: openapiSpecification as OpenAPIV3.Document, // Path to your OpenAPI specification
+//     validateResponses: true,
 //     validateRequests: true,
 //   }),
 // );
+
 
 // Add APIs, must be after middleware
 app.use(Paths.Base, BaseRouter);
@@ -84,7 +84,7 @@ app.use((
   next: NextFunction,
 ) => {
   if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
-    logger.err(err, true);
+    logger.err(err, false);
   }
   let status = HttpStatusCodes.BAD_REQUEST;
   if (err instanceof RouteError) {

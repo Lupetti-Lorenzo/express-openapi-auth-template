@@ -10,11 +10,9 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import SessionUtil from '@src/util/SessionUtil';
 import { ISessionUser, UserRoles } from '@src/models/User';
 
+import { USER_UNAUTHORIZED_ERR } from '@src/constants/ErrorMessages';
 
 // **** Variables **** //
-
-const USER_UNAUTHORIZED_ERR = 'User not authorized to perform this action';
-
 
 // **** Types **** //
 

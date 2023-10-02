@@ -6,7 +6,7 @@ import orm from './MockOrm';
 // **** Functions **** //
 
 /**
- * Get one user.
+ * Get one user by email
  */
 async function getOne(email: string): Promise<IUser | null> {
   const db = await orm.openDb();
@@ -17,6 +17,20 @@ async function getOne(email: string): Promise<IUser | null> {
   }
   return null;
 }
+
+/**
+ * Get one user by id
+ */
+async function getById(id: number): Promise<IUser | null> {
+  const db = await orm.openDb();
+  for (const user of db.users) {
+    if (user.id === id) {
+      return user;
+    }
+  }
+  return null;
+}
+
 
 /**
  * See if a user with the given id exists.
@@ -80,6 +94,7 @@ async function delete_(id: number): Promise<void> {
 
 export default {
   getOne,
+  getById,
   persists,
   getAll,
   add,

@@ -2,12 +2,9 @@ import UserRepo from '@src/repos/UserRepo';
 import { IUser } from '@src/models/User';
 import { RouteError } from '@src/other/classes';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-
+import  { USER_NOT_FOUND_ERR } from '@src/constants/ErrorMessages';
 
 // **** Variables **** //
-
-export const USER_NOT_FOUND_ERR = 'User not found';
-
 
 // **** Functions **** //
 
@@ -17,6 +14,22 @@ export const USER_NOT_FOUND_ERR = 'User not found';
 function getAll(): Promise<IUser[]> {
   return UserRepo.getAll();
 }
+
+/**
+ * Get user by id.
+ */
+async function getById(id: number): Promise<IUser | null> {
+  const persists = await UserRepo.persists(id);
+  if (!persists) {
+    throw new RouteError(
+      HttpStatusCodes.NOT_FOUND,
+      USER_NOT_FOUND_ERR,
+    );
+  }
+  // Return user
+  return UserRepo.getById(id);
+}
+
 
 /**
  * Add one user.
@@ -60,6 +73,7 @@ async function _delete(id: number): Promise<void> {
 
 export default {
   getAll,
+  getById,
   addOne,
   updateOne,
   delete: _delete,

@@ -18,25 +18,76 @@ import { IReq, IRes } from './types/express/misc';
  *   get:
  *     tags:
  *     - user
- *     summary: Logs out the current logged-in user session
- *     description: "This is a sample description for the endpoint."  # Updated description here
- *     operationId: logoutUser
- *     parameters:
- *     - name: username
- *       in: query   # Set the parameter location to 'query'
- *       description: 'The name that needs to be fetched. Use user1 for testing. '
- *       required: true
- *       schema:
- *         type: string
+ *     summary: Retrieve all users
+ *     description: "This endpoint retrieves all users from the database."
+ *     operationId: getAllUsers
  *     responses:
- *       default:
- *         description: successful operation
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 
 
 async function getAll(_: IReq, res: IRes) {
   const users = await UserService.getAll();
   return res.status(HttpStatusCodes.OK).json({ users });
+}
+
+
+/**
+ * Get user by id.
+ */
+/**
+ * @openapi
+ *
+ * /api/users/{id}:
+ *   get:
+ *     tags:
+ *     - user
+ *     summary: Get a user by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the user to retrieve.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       '404':
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ */
+
+
+
+async function getById(req: IReq, res: IRes) {
+  const id = +req.params.id;
+  const user = await UserService.getById(id);
+  return res.status(HttpStatusCodes.OK).json({ user });
 }
 
 /**
@@ -71,6 +122,7 @@ async function delete_(req: IReq, res: IRes) {
 
 export default {
   getAll,
+  getById,
   add,
   update,
   delete: delete_,
