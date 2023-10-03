@@ -42,7 +42,7 @@ async function adminMw(req: Request, res: Response, next: NextFunction) {
     })
     .catch((err) => {
       // if fails the decode of the token return an error
-      return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: err });
+      return res.status(HttpStatusCodes.FORBIDDEN).json({ error: err });
     });
 }
 

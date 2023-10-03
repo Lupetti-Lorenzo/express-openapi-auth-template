@@ -1,13 +1,10 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import AuthService from '@src/services/AuthService';
 import TokenUtil from '@src/util/TokenUtil';
+
 import { TSessionData } from '@src/models/User';
-
 import { IReq, IRes } from './types/express/misc';
-
-// import { getRandomInt } from '@src/util/misc';
-// import { ISessionUser } from '@src/models/User';
-
+import { getRandomInt } from '@src/util/misc';
 
 // **** Types **** //
 
@@ -63,22 +60,21 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
 
 async function token(req: IReq, res: IRes) {
   // check if refresh token exists and if it is valid
-  // if (!TokenUtil.isRefreshTokenValid(req))
-  //   return res.sendStatus(HttpStatusCodes.FORBIDDEN);
+  if (!TokenUtil.isRefreshTokenValid(req))
+    return res.sendStatus(HttpStatusCodes.FORBIDDEN).json({ error: 'Refresh token expired or not valid' });
   // if it is valid, generate a new access token and return it
   // before i get data from the refresh token to generate the access token
   TokenUtil.getRefreshTokenData<TSessionData>(req)
     .then(async (refreshTokenData) => {
       // set access token inside body
       if (typeof refreshTokenData === 'object' && refreshTokenData !== null) {
-        // add salt to get different token every time
-        //data.salt = getRandomInt();
         // extract data from the token
         const data = {
           id: refreshTokenData.id,
           email: refreshTokenData.email,
           name: refreshTokenData.name,
           role: refreshTokenData.role,
+          salt: getRandomInt(), // add salt to get different access tokens every time
         };
 
         res.status(HttpStatusCodes.OK);

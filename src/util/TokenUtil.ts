@@ -34,7 +34,7 @@ const refreshTokens: string[] = [];
 function getRefreshTokenData<T>(req: Request): Promise<string | T | undefined> {
   const { Key } = EnvVars.CookieProps,
     jwt = req.signedCookies[Key];
-  return _decode(jwt, EnvVars.Jwt.RefreshSecret);
+  return _decode<T>(jwt, EnvVars.Jwt.RefreshSecret);
 }
 
 function getRefreshToken(req: Request): string | undefined {
@@ -88,7 +88,7 @@ function clearCookie(res: Response): Response {
 function getAccessTokenData<T>(req: Request): Promise<string | T | undefined> {
   const authHeader = req.headers['authorization'];
   const jwt = (authHeader && authHeader.split(' ')[1]) || '';
-  return _decode(jwt, EnvVars.Jwt.Secret);
+  return _decode<T>(jwt, EnvVars.Jwt.Secret);
 }
 
 /**
