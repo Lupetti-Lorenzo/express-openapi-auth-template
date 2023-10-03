@@ -30,7 +30,7 @@ async function getById(id: number): Promise<IUser | null> {
   return UserRepo.getById(id);
 }
 
-
+ 
 /**
  * Add one user.
  */

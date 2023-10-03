@@ -1,10 +1,11 @@
 import { Router } from 'express';
 
-// import adminMw from './middleware/adminMw';
-import userMw from './middleware/userMw';
+import adminMw from './middleware/adminMw';
+// import userMw from './middleware/userMw';
 import Paths from '../constants/Paths';
 import AuthRoutes from './AuthRoutes';
 import UserRoutes from './UserRoutes';
+
 
 
 // **** Variables **** //
@@ -27,6 +28,14 @@ authRouter.get(
   Paths.Auth.Logout,
   AuthRoutes.logout,
 );
+
+// Request new access token
+authRouter.get(
+  Paths.Auth.Token,
+  AuthRoutes.token,
+);
+
+
 
 // Add AuthRouter
 apiRouter.use(Paths.Auth.Base, authRouter);
@@ -68,7 +77,7 @@ userRouter.delete(
 
 // Add UserRouter
 // apiRouter.use(Paths.Users.Base, userRouter);
-apiRouter.use(Paths.Users.Base, userMw, userRouter);
+apiRouter.use(Paths.Users.Base, adminMw, userRouter);
 
 
 // **** Export default **** //

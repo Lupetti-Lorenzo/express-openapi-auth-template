@@ -9,7 +9,7 @@ export default {
   NodeEnv: (process.env.NODE_ENV ?? ''),
   Port: (process.env.PORT ?? 0),
   CookieProps: {
-    Key: 'session',
+    Key: 'refreshToken',
     Secret: (process.env.COOKIE_SECRET ?? ''),
     // Casing to match express cookie options
     Options: {
@@ -23,6 +23,8 @@ export default {
   },
   Jwt: {
     Secret: (process.env.JWT_SECRET ??  ''),
-    Exp: (process.env.COOKIE_EXP ?? ''), // exp at the same time as the cookie
+    RefreshSecret: (process.env.JWT_REFRESHSECRET ??  ''),
+    Exp: (process.env.TOKEN_EXP ?? ''), // exp at the same time as the cookie
+    RefreshExp: (process.env.REFRESH_EXP ?? ''),
   },
 } as const;

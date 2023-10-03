@@ -1,3 +1,5 @@
+import { JwtPayload } from 'jsonwebtoken';
+
 // **** Variables **** //
 
 const INVALID_CONSTRUCTOR_PARAM = 'nameOrObj arg must a string or an ' + 
@@ -51,7 +53,11 @@ export interface ISessionUser {
   email: string;
   name: string;
   role: IUser['role'];
+  salt?: number;
 }
+
+export type TSessionData = ISessionUser & JwtPayload;
+
 
 
 // **** Functions **** //

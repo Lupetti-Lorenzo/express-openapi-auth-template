@@ -3,12 +3,12 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { JwtPayload } from 'jsonwebtoken';
 
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 
-import SessionUtil from '@src/util/SessionUtil';
-import { ISessionUser, UserRoles } from '@src/models/User';
+// import SessionUtil from '@src/util/SessionUtil';
+import TokenUtil from '@src/util/TokenUtil';
+import { TSessionData, UserRoles } from '@src/models/User';
 import { USER_UNAUTHORIZED_ERR } from '@src/constants/ErrorMessages';
 
 // **** Variables **** //
@@ -16,34 +16,34 @@ import { USER_UNAUTHORIZED_ERR } from '@src/constants/ErrorMessages';
 
 // **** Types **** //
 
-type TSessionData = ISessionUser & JwtPayload;
-
-
 // **** Functions **** //
 
 /**
  * See note at beginning of file.
  */
-async function adminMw(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+// versione con access token
+async function adminMw(req: Request, res: Response, next: NextFunction) {
   // Get session data
-  const sessionData = await SessionUtil.getSessionData<TSessionData>(req);
-  // Set session data to locals
-  if (
-    typeof sessionData === 'object' &&
-    sessionData?.role === UserRoles.Admin
-  ) {
-    res.locals.sessionUser = sessionData;
-    return next();
-  // Return an unauth error if user is not an admin
-  } else {
-    return res
-      .status(HttpStatusCodes.UNAUTHORIZED)
-      .json({ error: USER_UNAUTHORIZED_ERR });
-  }
+  TokenUtil.getAccessTokenData<TSessionData>(req)
+    .then((sessionData) => {
+      // Set session data to locals
+      if (
+        typeof sessionData === 'object' &&
+        sessionData?.role === UserRoles.Admin
+      ) {
+        res.locals.sessionUser = sessionData;
+        return next();
+        // Return an unauth error if user is not an admin
+      } else {
+        return res
+          .status(HttpStatusCodes.UNAUTHORIZED)
+          .json({ error: USER_UNAUTHORIZED_ERR });
+      }
+    })
+    .catch((err) => {
+      // if fails the decode of the token return an error
+      return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: err });
+    });
 }
 
 
