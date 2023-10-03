@@ -1,9 +1,8 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import AuthService from '@src/services/AuthService';
 import TokenUtil from '@src/util/TokenUtil';
-import logger from 'jet-logger';
 
-import { ISessionUser, TSessionData } from '@src/models/User';
+import { ISessionUser } from '@src/models/User';
 import { IReq, IRes } from './types/express/misc';
 import { getRandomInt } from '@src/util/misc';
 import { RouteError } from '@src/other/classes';
@@ -22,7 +21,7 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
 
 /**
  * @openapi
- * /token:
+ * api/auth/token:
  *   get:
  *     summary: Generate a new access token from a valid refresh token inside cookies.
  *     description: |
@@ -60,42 +59,28 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
  */
 
 async function token(req: IReq, res: IRes) {
-	// check if refresh token exists and if it is valid
-	if (!TokenUtil.isRefreshTokenValid(req)) throw new RouteError(HttpStatusCodes.FORBIDDEN, 'Refresh token expired or not valid');
-	// if it is valid, generate a new access token and return it
-	// before i get data from the refresh token to generate the access token
-	TokenUtil.getRefreshTokenData<TSessionData>(req)
-		.then(async (refreshTokenData) => {
-			// set access token inside body
-			if (typeof refreshTokenData === 'object' && refreshTokenData !== null) {
-				// extract data from the token
-				const data: ISessionUser = {
-					id: refreshTokenData.id,
-					email: refreshTokenData.email,
-					name: refreshTokenData.name,
-					role: refreshTokenData.role,
-					salt: getRandomInt(), // add salt to get different access tokens every time
-				};
+	// get refresh token from cookies - automatically checks if it is valid
+	const refreshTokenData = await TokenUtil.getRefreshTokenSession(req, res);
+	if (!refreshTokenData) return res.end();
 
-				res.status(HttpStatusCodes.OK);
-				await TokenUtil.addAccessToken(res, data);
-				// return success message
-				return res;
-			} else {
-				logger.err(TOKEN_MALFORMED, false);
-				return res.status(HttpStatusCodes.CONFLICT).json({ error: TOKEN_MALFORMED });
-			}
-		})
-		.catch((err) => {
-			// if fails the decode of the token return an error
-			logger.err(err, false);
-			return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: err });
-		});
+	// check redris cache if refresh token exists - if not is expired of not valid
+	// (because after logout the jwt remains active and like this i can invalidate it)
+	if (!TokenUtil.refreshTokenExists(refreshTokenData.id))
+		throw new RouteError(HttpStatusCodes.FORBIDDEN, 'Refresh token expired or not valid');
+
+	// if it is valid, generate a new access token and return it
+	// add salt to get different access tokens every time
+	refreshTokenData.salt = getRandomInt();
+	// return success message
+	res.status(HttpStatusCodes.OK);
+	// add the access token to the response
+	await TokenUtil.addAccessToken(res, refreshTokenData);
+	return res;
 }
 
 /**
  * @openapi
- * /login:
+ * /api/auth/login:
  *   post:
  *     summary: User login
  *     description: |
@@ -183,7 +168,7 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
 
 /**
  * @openapi
- * /logout:
+ * /api/auth/logout:
  *   post:
  *     summary: Logs the user out, invalidates refresh token, and clears cookies.
  *     description: |
@@ -201,9 +186,10 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
 /**
  * Logout the user. - qui manca di eliminare il refresh token dal db
  */
-function logout(req: IReq, res: IRes) {
+async function logout(req: IReq, res: IRes) {
 	// remove refresh token from local database and clear cookies
-	TokenUtil.invalidateRefreshToken(req);
+	const success = await TokenUtil.invalidateRefreshToken(req, res);
+	if (!success) return res.end();
 	TokenUtil.clearCookie(res);
 	return res.status(HttpStatusCodes.OK).end();
 }

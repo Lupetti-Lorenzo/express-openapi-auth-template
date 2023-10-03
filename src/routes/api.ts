@@ -18,7 +18,7 @@ const authRouter = Router();
 authRouter.post(Paths.Auth.Login, AuthRoutes.login);
 
 // Logout user
-authRouter.get(Paths.Auth.Logout, AuthRoutes.logout);
+authRouter.post(Paths.Auth.Logout, AuthRoutes.logout);
 
 // Request new access token
 authRouter.get(Paths.Auth.Token, AuthRoutes.token);
