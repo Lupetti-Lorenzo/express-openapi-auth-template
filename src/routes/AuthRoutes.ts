@@ -5,6 +5,7 @@ import TokenUtil from '@src/util/TokenUtil';
 import { TSessionData } from '@src/models/User';
 import { IReq, IRes } from './types/express/misc';
 import { getRandomInt } from '@src/util/misc';
+import { RouteError } from '@src/other/classes';
 
 // **** Types **** //
 
@@ -59,8 +60,7 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
 
 async function token(req: IReq, res: IRes) {
 	// check if refresh token exists and if it is valid
-	if (!TokenUtil.isRefreshTokenValid(req))
-		return res.sendStatus(HttpStatusCodes.FORBIDDEN).json({ error: 'Refresh token expired or not valid' });
+	if (!TokenUtil.isRefreshTokenValid(req)) throw new RouteError(HttpStatusCodes.FORBIDDEN, 'Refresh token expired or not valid');
 	// if it is valid, generate a new access token and return it
 	// before i get data from the refresh token to generate the access token
 	TokenUtil.getRefreshTokenData<TSessionData>(req)
@@ -79,7 +79,7 @@ async function token(req: IReq, res: IRes) {
 				res.status(HttpStatusCodes.OK);
 				await TokenUtil.addAccessToken(res, data);
 				// return success message
-				return res.end();
+				return res;
 			} else return res.status(HttpStatusCodes.CONFLICT).json({ error: TOKEN_MALFORMED });
 		})
 		.catch((err) => {

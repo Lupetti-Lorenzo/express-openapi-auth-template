@@ -1,12 +1,6 @@
 sean.maxwell@gmail.com
 Password@1
 
-nelle funzioni di update, controllare la sessione per essere sicuri che sta modificando il proprio id
-fare un nuovo middelware da mettere dopo quelli di autenticazione, assicurarsi che l'id della richiesta sia lo stesso della sessione
-vedere se posso fare con middelware o gli id sono passati in modi diversi quindi meglio farlo dentro a dove serve 
-
-nella login mandare in hash la password???, ce, farla fare al client
-
 altro modo di creare utenti per le api, apikey associata ad un utente che puo usare per fare ogni tipo di richiesta
 potrebbe bastare il jwd della login, creo io il profilo, e gli do il jwt da mettere nella richiesta
 
@@ -14,14 +8,5 @@ authserver per generare access token e refresh token, gestisce la login con redr
 cosî posso generare api tokens che non expirano, oppure dopo tanto per le mie api del sistema
 almeno non uso cookies ma header bearer token che funziona su domini diversi - necessario per la scalabilita
 
-usare claims per role? 
-
-Sending the refresh token with each API call is completely at odds with the aim of the access/refresh token paradigm where the short lived access token goes out with API requests, and the refresh token is only used to request new access tokens.
-
-
-The fix is simple; scope the cookie to only the path for requesting a new access token. This keeps all the benefits described of access token in memory, refresh token in cookie, and avoids having the refresh token "hanging around" where it shouldn't be (e.g. API requests that may dump the request to logs, leaking the long lived refresh tokens)
-
 
 logger in gettoken per server, mettere in file separati la route api-server e il validatore nei middelware
-
-vedere dove faccio json({}) che dopo non mette gli headers sotto
