@@ -1,8 +1,9 @@
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import AuthService from '@src/services/AuthService';
 import TokenUtil from '@src/util/TokenUtil';
+import logger from 'jet-logger';
 
-import { TSessionData } from '@src/models/User';
+import { ISessionUser, TSessionData } from '@src/models/User';
 import { IReq, IRes } from './types/express/misc';
 import { getRandomInt } from '@src/util/misc';
 import { RouteError } from '@src/other/classes';
@@ -68,7 +69,7 @@ async function token(req: IReq, res: IRes) {
 			// set access token inside body
 			if (typeof refreshTokenData === 'object' && refreshTokenData !== null) {
 				// extract data from the token
-				const data = {
+				const data: ISessionUser = {
 					id: refreshTokenData.id,
 					email: refreshTokenData.email,
 					name: refreshTokenData.name,
@@ -80,10 +81,14 @@ async function token(req: IReq, res: IRes) {
 				await TokenUtil.addAccessToken(res, data);
 				// return success message
 				return res;
-			} else return res.status(HttpStatusCodes.CONFLICT).json({ error: TOKEN_MALFORMED });
+			} else {
+				logger.err(TOKEN_MALFORMED, false);
+				return res.status(HttpStatusCodes.CONFLICT).json({ error: TOKEN_MALFORMED });
+			}
 		})
 		.catch((err) => {
 			// if fails the decode of the token return an error
+			logger.err(err, false);
 			return res.status(HttpStatusCodes.BAD_REQUEST).json({ error: err });
 		});
 }
@@ -162,7 +167,7 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
 	// Login
 	const user = await AuthService.login(email, password);
 	// Setup jwt data
-	const data = {
+	const data: ISessionUser = {
 		id: user.id,
 		email: user.name,
 		name: user.name,

@@ -1,12 +1,6 @@
 sean.maxwell@gmail.com
 Password@1
 
-altro modo di creare utenti per le api, apikey associata ad un utente che puo usare per fare ogni tipo di richiesta
-potrebbe bastare il jwd della login, creo io il profilo, e gli do il jwt da mettere nella richiesta
-
-authserver per generare access token e refresh token, gestisce la login con redris cache per array di access token 
-cosî posso generare api tokens che non expirano, oppure dopo tanto per le mie api del sistema
-almeno non uso cookies ma header bearer token che funziona su domini diversi - necessario per la scalabilita
-
-
-logger in gettoken per server, mettere in file separati la route api-server e il validatore nei middelware
+prossime cose da fare:
+	fare login che si aspetta la password hashed e fare compare
+	redris cache

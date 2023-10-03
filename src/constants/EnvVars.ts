@@ -26,4 +26,9 @@ export default {
 		Exp: process.env.TOKEN_EXP ?? '', // exp at the same time as the cookie
 		RefreshExp: process.env.REFRESH_EXP ?? '',
 	},
+	Redis: {
+		Port: process.env.REDIS_PORT ?? 6379,
+		Host: process.env.REDIS_HOST ?? 'localhost',
+		Password: process.env.REDIS_PASS ?? '',
+	},
 } as const;

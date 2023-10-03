@@ -4,7 +4,10 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { RouteError } from '@src/other/classes';
 import jsonwebtoken from 'jsonwebtoken';
 
+import RedisRepo from '@src/repos/RedisRepo';
+
 import EnvVars from '../constants/EnvVars';
+import { ISessionUser } from '@src/models/User';
 
 // **** Variables **** //
 
@@ -51,16 +54,16 @@ function isRefreshTokenValid(req: Request): boolean {
 /**
  * Add a JWT refresh token to cookies and database
  */
-async function addRefreshToken(res: Response, data: string | object): Promise<Response> {
-	if (!res || !data) {
+async function addRefreshToken(res: Response, data: ISessionUser): Promise<Response> {
+	if (!res || !data || typeof data !== 'object') {
 		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
 	}
 	// Setup JWT
 	const jwt = await _sign(data, EnvVars.Jwt.RefreshSecret, RefreshTokenOptions),
 		{ Key, Options } = EnvVars.CookieProps;
 	// set refresh token inside database
-	refreshTokens.push(jwt);
-	// Return
+	await RedisRepo.setTokenById(String(data.id), jwt, Number(RefreshTokenOptions.expiresIn));
+	// Return the res with the cookie set
 	return res.cookie(Key, jwt, Options);
 }
 
@@ -90,7 +93,7 @@ function getAccessTokenData<T>(req: Request): Promise<string | T | undefined> {
  * Add a JWT to the response
  * questo da fare di aggiungere il token  refresh e il token di accesso ritornato tramite payload
  */
-async function addAccessToken(res: Response, data: string | object): Promise<Response> {
+async function addAccessToken(res: Response, data: ISessionUser): Promise<Response> {
 	if (!res || !data) {
 		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
 	}
