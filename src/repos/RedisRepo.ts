@@ -30,8 +30,13 @@ async function revokeTokenById(id: string): Promise<number> {
 	return client.del(id);
 }
 
+async function closeConnection() {
+	await client.quit();
+}
+
 export default {
 	setTokenById,
 	getTokenById,
 	revokeTokenById,
+	closeConnection,
 } as const;

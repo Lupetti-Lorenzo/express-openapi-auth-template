@@ -3,12 +3,7 @@ Password@1
 
 prossime cose da fare:
 
-
-	get verified commits from vscode
-
-	asportare swaggerdoc nei services e validator nel middelware
-
 aggiungere health check endpoint 
 
 error handling per redis chiamati in authservice
-prova
+redis hash token?
