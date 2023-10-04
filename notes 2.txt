@@ -8,12 +8,7 @@ prossime cose da fare:
 
 	asportare swaggerdoc nei services e validator nel middelware
 
-vedere se posso mettere qualcosa dentro auth service per alleggerire token util - quelle che interagiscono col db
-spostare quelle chiamate dalla route - sostituire TokenUtil. con AuthtService
-usare routeerror e togliere gli end - success message e basta togliere logger
-e spostare luso di redris
-
 aggiungere health check endpoint 
 
-	error handling per redis chiamati in authservice
-throw error manca in decodetoken 
+error handling per redis chiamati in authservice
+prova
