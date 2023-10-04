@@ -2,10 +2,18 @@ sean.maxwell@gmail.com
 Password@1
 
 prossime cose da fare:
-	fare login che si aspetta la password hashed e fare compare
-	rediscache fare la get nella validazione e la del nella logout 
-	asportare swaggerdoc nei services e validator nel middelware
-	aggiungere health check endpoint 
+
+
 	get verified commits from vscode
-	error handling per redis chiamati in tokenutil
-	da fare getsessiondata per access token come per il refresh
+
+	asportare swaggerdoc nei services e validator nel middelware
+
+vedere se posso mettere qualcosa dentro auth service per alleggerire token util - quelle che interagiscono col db
+spostare quelle chiamate dalla route - sostituire TokenUtil. con AuthtService
+usare routeerror e togliere gli end - success message e basta togliere logger
+e spostare luso di redris
+
+aggiungere health check endpoint 
+
+	error handling per redis chiamati in authservice
+throw error manca in decodetoken 

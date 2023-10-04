@@ -1,11 +1,8 @@
-import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import AuthService from '@src/services/AuthService';
-import TokenUtil from '@src/util/TokenUtil';
 
 import { ISessionUser } from '@src/models/User';
 import { IReq, IRes } from './types/express/misc';
 import { getRandomInt } from '@src/util/misc';
-import { RouteError } from '@src/other/classes';
 
 // **** Types **** //
 
@@ -59,23 +56,12 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
  */
 
 async function token(req: IReq, res: IRes) {
-	// get refresh token from cookies - automatically checks if it is valid
-	const refreshTokenData = await TokenUtil.getRefreshTokenSession(req, res);
-	if (!refreshTokenData) return res.end();
-
-	// check redris cache if refresh token exists - if not is expired of not valid
-	// (because after logout the jwt remains active and like this i can invalidate it)
-	if (!TokenUtil.refreshTokenExists(refreshTokenData.id))
-		throw new RouteError(HttpStatusCodes.FORBIDDEN, 'Refresh token expired or not valid');
-
+	const refreshTokenData = await AuthService.validateRefreshToken(req);
 	// if it is valid, generate a new access token and return it
 	// add salt to get different access tokens every time
 	refreshTokenData.salt = getRandomInt();
-	// return success message
-	res.status(HttpStatusCodes.OK);
-	// add the access token to the response
-	await TokenUtil.addAccessToken(res, refreshTokenData);
-	return res;
+	// return success message and add the access token to the response
+	return await AuthService.addAccessToken(res, refreshTokenData);
 }
 
 /**
@@ -159,9 +145,8 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
 		role: user.role,
 	};
 	// this put the refresh token inside cookies and returns the access token inside the body
-	res.status(HttpStatusCodes.OK);
-	await TokenUtil.addRefreshToken(res, data);
-	await TokenUtil.addAccessToken(res, data);
+	await AuthService.addRefreshToken(res, data);
+	await AuthService.addAccessToken(res, data);
 	// Return
 	return res;
 }
@@ -188,10 +173,7 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
  */
 async function logout(req: IReq, res: IRes) {
 	// remove refresh token from local database and clear cookies
-	const success = await TokenUtil.invalidateRefreshToken(req, res);
-	if (!success) return res.end();
-	TokenUtil.clearCookie(res);
-	return res.status(HttpStatusCodes.OK).end();
+	return await AuthService.logout(req, res);
 }
 
 // **** Export default **** //

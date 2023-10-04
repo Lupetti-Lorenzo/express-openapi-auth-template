@@ -1,15 +1,12 @@
 import { Request, Response } from 'express';
 
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { RouteError } from '@src/other/classes';
+// import { RouteError } from '@src/other/classes';
 import jsonwebtoken from 'jsonwebtoken';
-import { TOKEN_MALFORMED } from '@src/constants/ErrorMessages';
-import logger from 'jet-logger';
-
-import RedisRepo from '@src/repos/RedisRepo';
 
 import EnvVars from '../constants/EnvVars';
 import { ISessionUser, TSessionData } from '@src/models/User';
+import { RouteError } from '@src/other/classes';
 
 // **** Variables **** //
 
@@ -17,35 +14,12 @@ import { ISessionUser, TSessionData } from '@src/models/User';
 const Errors = {
 	ParamFalsey: 'Param is falsey',
 	Validation: 'JSON-web-token validation failed.',
+	Format: 'the format of the session is not an object',
 } as const;
-
-// Options
-const AccessTokenOptions = {
-	expiresIn: EnvVars.Jwt.Exp,
-};
-
-const RefreshTokenOptions = {
-	expiresIn: String(EnvVars.CookieProps.Options.maxAge),
-};
 
 // **** Functions **** //
 
 // **** Refresh Token **** //
-/**
- * Add a JWT refresh token to cookies and database
- */
-async function addRefreshToken(res: Response, data: ISessionUser): Promise<Response> {
-	if (!res || !data || typeof data !== 'object') {
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
-	}
-	// Setup JWT
-	const jwt = await _sign(data, EnvVars.Jwt.RefreshSecret, RefreshTokenOptions),
-		{ Key, Options } = EnvVars.CookieProps;
-	// set refresh token inside database
-	await RedisRepo.setTokenById(String(data.id), jwt, Number(RefreshTokenOptions.expiresIn));
-	// Return the res with the cookie set
-	return res.cookie(Key, jwt, Options);
-}
 
 // returns the refresh token data that can be string or object from the request but is a promise that can be rejected
 function decodeCookiesSession<T>(req: Request): Promise<string | T | undefined> {
@@ -55,12 +29,11 @@ function decodeCookiesSession<T>(req: Request): Promise<string | T | undefined> 
 }
 
 // here i implement the error handling for the cookies decoding for the object and return the session data
-// here i implement the error handling for the cookies decoding for the object and return the session data
-async function getRefreshTokenSession(req: Request, res: Response): Promise<ISessionUser | undefined> {
+async function getRefreshTokenSession(req: Request): Promise<ISessionUser> {
 	// get access token data from header
-	const accessTokenData = await getDecodedToken<TSessionData>(req, res, decodeCookiesSession);
+	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeCookiesSession);
 	// check if is the correct type
-	if (!accessTokenData || typeof accessTokenData !== 'object') return undefined;
+	if (!accessTokenData || typeof accessTokenData !== 'object') throw new RouteError(HttpStatusCodes.FORBIDDEN, Errors.Format);
 	// return the session
 	return extractUserInfo(accessTokenData);
 }
@@ -72,43 +45,12 @@ function getRefreshToken(req: Request): string | undefined {
 	return jwt;
 }
 
-// check if the refresh token exists in the redis database
-async function refreshTokenExists(id: number): Promise<boolean> {
-	const token = await RedisRepo.getTokenById(String(id));
-	return token !== null;
-}
-
-// invalidate the refresh token in the redis database
-async function invalidateRefreshToken(req: Request, res: Response): Promise<boolean> {
-	const sessionData = await getRefreshTokenSession(req, res);
-	if (!sessionData) return false;
-	// extract id from the token
-	const id = String(sessionData.id);
-	// invalidate refresh token
-	await RedisRepo.revokeTokenById(id);
-	// return success
-	return true;
-}
-
 // clear the cookie from the response
 function clearCookie(res: Response): Response {
 	const { Key, Options } = EnvVars.CookieProps;
 	return res.clearCookie(Key, Options);
 }
 // **** Access Token **** //
-/**
- * Add a JWT to the response
- * questo da fare di aggiungere il token  refresh e il token di accesso ritornato tramite payload
- */
-async function addAccessToken(res: Response, data: ISessionUser): Promise<Response> {
-	if (!res || !data) {
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
-	}
-	// Setup JWT access token
-	const accessToken = await _sign(data, EnvVars.Jwt.Secret, AccessTokenOptions);
-	// return the res with the token
-	return res.json({ accessToken });
-}
 
 /**
  * Get token from request object's header (i.e. ISessionUser)
@@ -120,13 +62,42 @@ function decodeAccessTokenData<T>(req: Request): Promise<string | T | undefined>
 }
 
 // here i implement the error handling for the cookies decoding for the object and return the session data
-async function getAccessTokenSession(req: Request, res: Response): Promise<ISessionUser | undefined> {
+async function getAccessTokenSession(req: Request): Promise<ISessionUser> {
 	// get access token data from header
-	const accessTokenData = await getDecodedToken<TSessionData>(req, res, decodeAccessTokenData);
+	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeAccessTokenData);
 	// check if is the correct type
-	if (!accessTokenData || typeof accessTokenData !== 'object') return undefined;
+	if (!accessTokenData || typeof accessTokenData !== 'object') throw new RouteError(HttpStatusCodes.FORBIDDEN, Errors.Format);
 	// return the session
 	return extractUserInfo(accessTokenData);
+}
+
+// here i implement the error handling for the cookies decoding for the object and return the session data
+async function getDecodedToken<T>(
+	req: Request,
+	decode: <T>(req: Request) => Promise<string | T | undefined>
+): Promise<string | T | undefined> {
+	try {
+		// decode the token depending on the decode function passed
+		const accessTokenData = await decode<T>(req);
+
+		if (accessTokenData !== null) {
+			// return the session
+			return accessTokenData;
+		}
+	} catch (err) {
+		// if decoding the token fails, return an error
+	}
+	return undefined;
+}
+
+function extractUserInfo(session: TSessionData): ISessionUser {
+	const data: ISessionUser = {
+		id: session.id,
+		email: session.email,
+		name: session.name,
+		role: session.role,
+	};
+	return data;
 }
 
 // **** Helper Functions **** //
@@ -153,51 +124,13 @@ function _decode<T>(jwt: string, secret: string): Promise<string | undefined | T
 	});
 }
 
-// here i implement the error handling for the cookies decoding for the object and return the session data
-async function getDecodedToken<T>(
-	req: Request,
-	res: Response,
-	decode: <T>(req: Request) => Promise<string | T | undefined>
-): Promise<string | T | undefined> {
-	try {
-		// decode the token depending on the decode function passed
-		const accessTokenData = await decode<T>(req);
-
-		if (accessTokenData !== null) {
-			// return the session
-			return accessTokenData;
-		} else {
-			logger.err(TOKEN_MALFORMED, false);
-			res.status(HttpStatusCodes.CONFLICT).json({ error: TOKEN_MALFORMED });
-		}
-	} catch (err) {
-		// if decoding the token fails, return an error
-		logger.err(err, false);
-		res.status(HttpStatusCodes.FORBIDDEN).json({ error: 'Refresh token expired or not valid' });
-	}
-
-	return undefined; // Return a default value if no valid session data was found
-}
-
-function extractUserInfo(session: TSessionData): ISessionUser {
-	const data: ISessionUser = {
-		id: session.id,
-		email: session.email,
-		name: session.name,
-		role: session.role,
-	};
-	return data;
-}
-
 // **** Export default **** //
 
 export default {
-	addAccessToken,
-	addRefreshToken,
 	getAccessTokenSession,
 	getRefreshTokenSession,
 	getRefreshToken,
-	refreshTokenExists,
-	invalidateRefreshToken,
 	clearCookie,
+	_sign,
+	extractUserInfo,
 } as const;
