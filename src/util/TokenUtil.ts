@@ -20,14 +20,6 @@ const Errors = {
 // **** Functions **** //
 
 // **** Refresh Token **** //
-
-// returns the refresh token data that can be string or object from the request but is a promise that can be rejected
-function decodeCookiesSession<T>(req: Request): Promise<string | T | undefined> {
-	const { Key } = EnvVars.CookieProps,
-		jwt = req.signedCookies[Key];
-	return _decode<T>(jwt, EnvVars.Jwt.RefreshSecret);
-}
-
 // here i implement the error handling for the cookies decoding for the object and return the session data
 async function getRefreshTokenSession(req: Request): Promise<ISessionUser> {
 	// get access token data from header
@@ -38,18 +30,20 @@ async function getRefreshTokenSession(req: Request): Promise<ISessionUser> {
 	return extractUserInfo(accessTokenData);
 }
 
-// returns the refresh token from the request
-function getRefreshToken(req: Request): string | undefined {
+// returns the refresh token data that can be string or object from the request but is a promise that can be rejected
+function decodeCookiesSession<T>(req: Request): Promise<string | T | undefined> {
 	const { Key } = EnvVars.CookieProps,
 		jwt = req.signedCookies[Key];
-	return jwt;
+	return _decode<T>(jwt, EnvVars.Jwt.RefreshSecret);
 }
 
-// clear the cookie from the response
-function clearCookie(res: Response): Response {
-	const { Key, Options } = EnvVars.CookieProps;
-	return res.clearCookie(Key, Options);
-}
+// returns the refresh token from the request
+// function getRefreshToken(req: Request): string | undefined {
+// 	const { Key } = EnvVars.CookieProps,
+// 		jwt = req.signedCookies[Key];
+// 	return jwt;
+// }
+
 // **** Access Token **** //
 
 /**
@@ -69,35 +63,6 @@ async function getAccessTokenSession(req: Request): Promise<ISessionUser> {
 	if (!accessTokenData || typeof accessTokenData !== 'object') throw new RouteError(HttpStatusCodes.FORBIDDEN, Errors.Format);
 	// return the session
 	return extractUserInfo(accessTokenData);
-}
-
-// here i implement the error handling for the cookies decoding for the object and return the session data
-async function getDecodedToken<T>(
-	req: Request,
-	decode: <T>(req: Request) => Promise<string | T | undefined>
-): Promise<string | T | undefined> {
-	try {
-		// decode the token depending on the decode function passed
-		const accessTokenData = await decode<T>(req);
-
-		if (accessTokenData !== null) {
-			// return the session
-			return accessTokenData;
-		}
-	} catch (err) {
-		// if decoding the token fails, return an error
-	}
-	return undefined;
-}
-
-function extractUserInfo(session: TSessionData): ISessionUser {
-	const data: ISessionUser = {
-		id: session.id,
-		email: session.email,
-		name: session.name,
-		role: session.role,
-	};
-	return data;
 }
 
 // **** Helper Functions **** //
@@ -124,12 +89,47 @@ function _decode<T>(jwt: string, secret: string): Promise<string | undefined | T
 	});
 }
 
+// here i implement the error handling for the cookies decoding for the object and return the session data
+async function getDecodedToken<T>(
+	req: Request,
+	decode: <T>(req: Request) => Promise<string | T | undefined>
+): Promise<string | T | undefined> {
+	try {
+		// decode the token depending on the decode function passed
+		const accessTokenData = await decode<T>(req);
+
+		if (accessTokenData !== null) {
+			// return the session
+			return accessTokenData;
+		}
+	} catch (err) {
+		// if decoding the token fails, return an error
+	}
+	return undefined;
+}
+
+// clear the cookie from the response
+function clearCookie(res: Response): Response {
+	const { Key, Options } = EnvVars.CookieProps;
+	return res.clearCookie(Key, Options);
+}
+
+function extractUserInfo(session: TSessionData): ISessionUser {
+	const data: ISessionUser = {
+		id: session.id,
+		email: session.email,
+		name: session.name,
+		role: session.role,
+	};
+	return data;
+}
+
 // **** Export default **** //
 
 export default {
 	getAccessTokenSession,
 	getRefreshTokenSession,
-	getRefreshToken,
+	// getRefreshToken,
 	clearCookie,
 	_sign,
 	extractUserInfo,
