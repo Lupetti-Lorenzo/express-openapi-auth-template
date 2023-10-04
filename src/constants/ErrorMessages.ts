@@ -3,5 +3,5 @@ export const USER_NOT_FOUND_ERR = 'User not found';
 export const TOKEN_ERRORS = {
 	ParamFalsey: 'Param is falsey',
 	Validation: 'JSON-web-token validation failed.',
-	Format: 'The format of the session is not an object',
+	Format: 'the format of the session is not an object',
 } as const;

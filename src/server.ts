@@ -1,3 +1,7 @@
+/**
+ * Setup express server.
+ */
+
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -9,6 +13,8 @@ import openApiSpec from './services/Swagger';
 import * as swaggerUi from 'swagger-ui-express';
 // import * as OpenApiValidator from 'express-openapi-validator';
 // import { OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
+
+import 'express-async-errors';
 
 import BaseRouter from '@src/routes/api';
 import Paths from '@src/constants/Paths';
@@ -41,12 +47,13 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 	app.use(helmet());
 }
 
-// SWAGGER UI ROUTE
+// OPENAPI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+// SWAGGER UI ROUTE
 // OPENAPI VALIDATOR MIDDELWARE
 // app.use(
 //   OpenApiValidator.middleware({
-//     apiSpec: openApiSpec as OpenAPIV3.Document, // Path to your OpenAPI specification
+//     apiSpec: openapiSpecification as OpenAPIV3.Document, // Path to your OpenAPI specification
 //     validateResponses: true,
 //     validateRequests: true,
 //   }),

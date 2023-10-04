@@ -2,33 +2,33 @@ import { Request, Response } from 'express';
 
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import jsonwebtoken from 'jsonwebtoken';
-import { TOKEN_ERRORS } from '@src/constants/ErrorMessages';
 
 import EnvVars from '../constants/EnvVars';
 import { ISessionUser, TSessionData } from '@src/models/User';
 import { RouteError } from '@src/other/classes';
+import { TOKEN_ERRORS } from '@src/constants/ErrorMessages';
 
 // **** Variables **** //
 
 // **** Functions **** //
 
 // **** Refresh Token **** //
+// returns the refresh token data that can be string or object from the request but is a promise that can be rejected
+function decodeRefreshTokenCookies<T>(req: Request): Promise<string | T | undefined> {
+	const { Key } = EnvVars.CookieProps,
+		jwt = req.signedCookies[Key];
+	return _decode<T>(jwt, EnvVars.Jwt.RefreshSecret);
+}
+
 // here i implement the error handling for the cookies decoding for the object and return the session data
 async function getRefreshTokenSession(req: Request): Promise<ISessionUser> {
 	// get access token data from header
-	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeCookiesSession);
+	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeRefreshTokenCookies);
 	// check if is the correct type
 	if (!accessTokenData || typeof accessTokenData !== 'object')
 		throw new RouteError(HttpStatusCodes.FORBIDDEN, TOKEN_ERRORS.Format);
 	// return the session
 	return extractUserInfo(accessTokenData);
-}
-
-// returns the refresh token data that can be string or object from the request but is a promise that can be rejected
-function decodeCookiesSession<T>(req: Request): Promise<string | T | undefined> {
-	const { Key } = EnvVars.CookieProps,
-		jwt = req.signedCookies[Key];
-	return _decode<T>(jwt, EnvVars.Jwt.RefreshSecret);
 }
 
 // returns the refresh token from the request
@@ -43,7 +43,7 @@ function decodeCookiesSession<T>(req: Request): Promise<string | T | undefined> 
 /**
  * Get token from request object's header (i.e. ISessionUser)
  */
-function decodeAccessTokenHeader<T>(req: Request): Promise<string | T | undefined> {
+function decodeAccessTokenHeaders<T>(req: Request): Promise<string | T | undefined> {
 	const authHeader = req.headers['authorization'];
 	const jwt = (authHeader && authHeader.split(' ')[1]) || '';
 	return _decode<T>(jwt, EnvVars.Jwt.Secret);
@@ -52,7 +52,7 @@ function decodeAccessTokenHeader<T>(req: Request): Promise<string | T | undefine
 // here i implement the error handling for the cookies decoding for the object and return the session data
 async function getAccessTokenSession(req: Request): Promise<ISessionUser> {
 	// get access token data from header
-	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeAccessTokenHeader);
+	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeAccessTokenHeaders);
 	// check if is the correct type
 	if (!accessTokenData || typeof accessTokenData !== 'object')
 		throw new RouteError(HttpStatusCodes.FORBIDDEN, TOKEN_ERRORS.Format);
