@@ -1,23 +1,14 @@
-/**
- * Setup express server.
- */
-
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import express, { Request, Response, NextFunction } from 'express';
 import logger from 'jet-logger';
-import path from 'path';
-import yaml from 'js-yaml';
-import fs from 'fs';
 
 // OPENAPI
+import openApiSpec from './services/Swagger';
 import * as swaggerUi from 'swagger-ui-express';
 // import * as OpenApiValidator from 'express-openapi-validator';
 // import { OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
-import swaggerJSDoc from 'swagger-jsdoc';
-
-import 'express-async-errors';
 
 import BaseRouter from '@src/routes/api';
 import Paths from '@src/constants/Paths';
@@ -50,18 +41,12 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 	app.use(helmet());
 }
 
-// OPENAPI
-const spec = path.join(__dirname, './api-doc.yml');
-// read base swagger options from api-doc.yml
-const swaggerOptions: swaggerUi.JsonObject = yaml.load(fs.readFileSync(spec, 'utf8')) as swaggerUi.JsonObject;
-// read swagger options inside routes and models files
-const openapiSpecification = swaggerJSDoc(swaggerOptions);
 // SWAGGER UI ROUTE
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 // OPENAPI VALIDATOR MIDDELWARE
 // app.use(
 //   OpenApiValidator.middleware({
-//     apiSpec: openapiSpecification as OpenAPIV3.Document, // Path to your OpenAPI specification
+//     apiSpec: openApiSpec as OpenAPIV3.Document, // Path to your OpenAPI specification
 //     validateResponses: true,
 //     validateRequests: true,
 //   }),

@@ -10,17 +10,16 @@ import { ISessionUser, IUser } from '@src/models/User';
 import { IReq, IRes } from '@src/routes/types/express/misc';
 import RedisRepo from '@src/repos/RedisRepo';
 import EnvVars from '@src/constants/EnvVars';
+import { TOKEN_ERRORS } from '@src/constants/ErrorMessages';
 
 // **** Variables **** //
 
 // Errors
-export const Errors = {
+export const LoginErrors = {
 	Unauth: 'Unauthorized',
 	EmailNotFound(email: string) {
 		return `User with email "${email}" not found`;
 	},
-	ParamFalsey: 'Param is falsey',
-	Validation: 'JSON-web-token validation failed.',
 } as const;
 
 // Options
@@ -41,7 +40,7 @@ async function login(email: string, password: string): Promise<IUser> {
 	// Fetch user
 	const user = await UserRepo.getOne(email);
 	if (!user) {
-		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, Errors.EmailNotFound(email));
+		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, LoginErrors.EmailNotFound(email));
 	}
 	// Check password
 	const hash = user.pwdHash ?? '',
@@ -49,7 +48,7 @@ async function login(email: string, password: string): Promise<IUser> {
 	if (!pwdPassed) {
 		// If password failed, wait 500ms this will increase security
 		await tick(500);
-		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, Errors.Unauth);
+		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, LoginErrors.Unauth);
 	}
 	// Return
 	return user;
@@ -71,7 +70,7 @@ async function logout(req: IReq, res: IRes): Promise<IRes> {
  */
 async function addAccessToken(res: IRes, data: ISessionUser): Promise<IRes> {
 	if (!res || !data) {
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, TOKEN_ERRORS.ParamFalsey);
 	}
 	// Setup JWT access token
 	const accessToken = await TokenUtil._sign(data, EnvVars.Jwt.Secret, AccessTokenOptions);
@@ -84,7 +83,7 @@ async function addAccessToken(res: IRes, data: ISessionUser): Promise<IRes> {
  */
 async function addRefreshToken(res: IRes, data: ISessionUser): Promise<IRes> {
 	if (!res || !data || typeof data !== 'object') {
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, TOKEN_ERRORS.ParamFalsey);
 	}
 	// Setup JWT
 	const jwt = await TokenUtil._sign(data, EnvVars.Jwt.RefreshSecret, RefreshTokenOptions),
@@ -104,19 +103,13 @@ async function invalidateRefreshToken(req: IReq) {
 	await RedisRepo.revokeTokenById(id);
 }
 
-// check if the refresh token exists in the redis database
-async function refreshTokenExists(id: number): Promise<boolean> {
-	const token = await RedisRepo.getTokenById(String(id));
-	return token !== null;
-}
-
 // validate the refresh token
 async function validateRefreshToken(req: IReq): Promise<ISessionUser> {
 	// get refresh token from cookies - automatically checks if it is valid
 	const refreshTokenData = await TokenUtil.getRefreshTokenSession(req);
 	// check redris cache if refresh token exists - if not is expired of not valid
 	// (because after logout the jwt remains active and like this i can invalidate it)
-	if (!refreshTokenExists(refreshTokenData.id))
+	if (!RedisRepo.getTokenById(String(refreshTokenData.id)))
 		throw new RouteError(HttpStatusCodes.FORBIDDEN, 'Refresh token expired or not valid');
 	return refreshTokenData;
 }

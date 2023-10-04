@@ -1,21 +1,14 @@
 import { Request, Response } from 'express';
 
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-// import { RouteError } from '@src/other/classes';
 import jsonwebtoken from 'jsonwebtoken';
+import { TOKEN_ERRORS } from '@src/constants/ErrorMessages';
 
 import EnvVars from '../constants/EnvVars';
 import { ISessionUser, TSessionData } from '@src/models/User';
 import { RouteError } from '@src/other/classes';
 
 // **** Variables **** //
-
-// Errors
-const Errors = {
-	ParamFalsey: 'Param is falsey',
-	Validation: 'JSON-web-token validation failed.',
-	Format: 'the format of the session is not an object',
-} as const;
 
 // **** Functions **** //
 
@@ -25,7 +18,8 @@ async function getRefreshTokenSession(req: Request): Promise<ISessionUser> {
 	// get access token data from header
 	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeCookiesSession);
 	// check if is the correct type
-	if (!accessTokenData || typeof accessTokenData !== 'object') throw new RouteError(HttpStatusCodes.FORBIDDEN, Errors.Format);
+	if (!accessTokenData || typeof accessTokenData !== 'object')
+		throw new RouteError(HttpStatusCodes.FORBIDDEN, TOKEN_ERRORS.Format);
 	// return the session
 	return extractUserInfo(accessTokenData);
 }
@@ -49,7 +43,7 @@ function decodeCookiesSession<T>(req: Request): Promise<string | T | undefined> 
 /**
  * Get token from request object's header (i.e. ISessionUser)
  */
-function decodeAccessTokenData<T>(req: Request): Promise<string | T | undefined> {
+function decodeAccessTokenHeader<T>(req: Request): Promise<string | T | undefined> {
 	const authHeader = req.headers['authorization'];
 	const jwt = (authHeader && authHeader.split(' ')[1]) || '';
 	return _decode<T>(jwt, EnvVars.Jwt.Secret);
@@ -58,9 +52,10 @@ function decodeAccessTokenData<T>(req: Request): Promise<string | T | undefined>
 // here i implement the error handling for the cookies decoding for the object and return the session data
 async function getAccessTokenSession(req: Request): Promise<ISessionUser> {
 	// get access token data from header
-	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeAccessTokenData);
+	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeAccessTokenHeader);
 	// check if is the correct type
-	if (!accessTokenData || typeof accessTokenData !== 'object') throw new RouteError(HttpStatusCodes.FORBIDDEN, Errors.Format);
+	if (!accessTokenData || typeof accessTokenData !== 'object')
+		throw new RouteError(HttpStatusCodes.FORBIDDEN, TOKEN_ERRORS.Format);
 	// return the session
 	return extractUserInfo(accessTokenData);
 }
@@ -84,7 +79,7 @@ function _sign(data: string | object | Buffer, secret: string, Options: object =
 function _decode<T>(jwt: string, secret: string): Promise<string | undefined | T> {
 	return new Promise((res, rej) => {
 		jsonwebtoken.verify(jwt, secret, (err, decoded) => {
-			return err ? rej(Errors.Validation) : res(decoded as T);
+			return err ? rej(TOKEN_ERRORS.Validation) : res(decoded as T);
 		});
 	});
 }
