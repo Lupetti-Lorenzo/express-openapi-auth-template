@@ -18,7 +18,7 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
 
 /**
  * @openapi
- * api/auth/token:
+ * /auth/token:
  *   get:
  *     summary: Generate a new access token from a valid refresh token inside cookies.
  *     description: |
@@ -34,7 +34,7 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
  *               properties:
  *                 accessToken:
  *                   type: string
- *                   description: The newly generated access token.
+ *                   description: The newly generated access token for the authenticated user.
  *       '400':
  *         description: Bad Request
  *         content:
@@ -45,8 +45,18 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
  *                 error:
  *                   type: string
  *                   description: Error message indicating token validation failure.
- *       '403':
- *         description: Forbidden
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Refresh token expired or not valid.
+ *       '500':
+ *         description: Internal Server Error
  *     tags:
  *       - Authentication
  */
@@ -66,7 +76,7 @@ async function token(req: IReq, res: IRes) {
 
 /**
  * @openapi
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     summary: User login
  *     description: |
@@ -87,7 +97,7 @@ async function token(req: IReq, res: IRes) {
  *                 type: string
  *                 description: The user's password.
  *     responses:
- *       '200':
+ *       '201':
  *         description: Login successful
  *         content:
  *           application/json:
@@ -153,8 +163,8 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
 
 /**
  * @openapi
- * /api/auth/logout:
- *   post:
+ * /auth/logout:
+ *   get:
  *     summary: Logs the user out, invalidates refresh token, and clears cookies.
  *     description: |
  *       This endpoint is used to log out a user and perform the following actions:
@@ -163,8 +173,18 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
  *     responses:
  *       '200':
  *         description: Successful logout.
- *       '401':
- *         description: Unauthorized - user not authenticated.
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Usually an error due to token expired or not privided.
+ *       '500':
+ *         description: Internal Server Error
  *     tags:
  *       - Authentication
  */

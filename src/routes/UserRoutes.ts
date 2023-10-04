@@ -13,7 +13,7 @@ import { IReq, IRes } from './types/express/misc';
 /**
  * @openapi
  *
- * /api/users/all:
+ * /users/all:
  *   get:
  *     tags:
  *     - user
@@ -32,6 +32,8 @@ import { IReq, IRes } from './types/express/misc';
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/User'
+ *       '500':
+ *         description: Internal Server Error
  */
 
 async function getAll(_: IReq, res: IRes) {
@@ -45,7 +47,7 @@ async function getAll(_: IReq, res: IRes) {
 /**
  * @openapi
  *
- * /api/users/{id}:
+ * /users/{id}:
  *   get:
  *     tags:
  *     - user
@@ -77,6 +79,8 @@ async function getAll(_: IReq, res: IRes) {
  *                 message:
  *                   type: string
  *                   example: User not found
+ *       '500':
+ *         description: Internal Server Error
  */
 
 async function getById(req: IReq, res: IRes) {

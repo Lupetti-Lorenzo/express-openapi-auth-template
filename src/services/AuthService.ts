@@ -111,7 +111,7 @@ async function validateRefreshToken(req: IReq): Promise<ISessionUser> {
 	// check redris cache if refresh token exists - if not is expired of not valid
 	// (because after logout the jwt remains active and like this i can invalidate it)
 	if (!RedisRepo.getTokenById(String(refreshTokenData.id)))
-		throw new RouteError(HttpStatusCodes.FORBIDDEN, 'Refresh token expired or not valid');
+		throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Refresh token expired or not valid');
 	return refreshTokenData;
 }
 

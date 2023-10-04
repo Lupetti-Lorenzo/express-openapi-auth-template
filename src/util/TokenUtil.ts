@@ -26,7 +26,7 @@ async function getRefreshTokenSession(req: Request): Promise<ISessionUser> {
 	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeRefreshTokenCookies);
 	// check if is the correct type
 	if (!accessTokenData || typeof accessTokenData !== 'object')
-		throw new RouteError(HttpStatusCodes.FORBIDDEN, TOKEN_ERRORS.Format);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, TOKEN_ERRORS.Validation);
 	// return the session
 	return extractUserInfo(accessTokenData);
 }
@@ -55,7 +55,7 @@ async function getAccessTokenSession(req: Request): Promise<ISessionUser> {
 	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeAccessTokenHeaders);
 	// check if is the correct type
 	if (!accessTokenData || typeof accessTokenData !== 'object')
-		throw new RouteError(HttpStatusCodes.FORBIDDEN, TOKEN_ERRORS.Format);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, TOKEN_ERRORS.Validation);
 	// return the session
 	return extractUserInfo(accessTokenData);
 }

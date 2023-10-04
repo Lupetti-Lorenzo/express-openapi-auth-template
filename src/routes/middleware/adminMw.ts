@@ -11,16 +11,6 @@ import TokenUtil from '@src/util/TokenUtil';
 import { UserRoles } from '@src/models/User';
 import { USER_UNAUTHORIZED_ERR } from '@src/constants/ErrorMessages';
 
-// **** Variables **** //
-
-// **** Types **** //
-
-// **** Functions **** //
-
-/**
- * See note at beginning of file.
- */
-// versione con access token
 async function adminMw(req: Request, res: Response, next: NextFunction) {
 	// Get session data
 	const sessionData = await TokenUtil.getAccessTokenSession(req);

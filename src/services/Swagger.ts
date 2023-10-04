@@ -20,19 +20,6 @@ const swaggerDefinition = {
 		// contact: { name: author, email: 'amin.abbasi.rs@gmail.com' },
 	},
 	servers: [{ url: `${url}/` }],
-	// basePath: '/api',
-	// schemes: ['http', 'https'],
-	consumes: ['application/json'],
-	produces: ['application/json'],
-	// host: url, // Host (optional)
-	securityDefinitions: {
-		JWT: {
-			type: 'Bearer',
-			in: 'header',
-			name: 'Authorization',
-			description: 'JWT Token for user authorization',
-		},
-	},
 };
 
 const options: swaggerJSDoc.Options = {

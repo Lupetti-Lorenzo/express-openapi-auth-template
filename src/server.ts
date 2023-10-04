@@ -11,9 +11,7 @@ import logger from 'jet-logger';
 // OPENAPI
 import openApiSpec from './services/Swagger';
 import * as swaggerUi from 'swagger-ui-express';
-// import * as OpenApiValidator from 'express-openapi-validator';
-// import { OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
-
+import openApiMw from '@src/routes/middleware/openApiMw';
 import 'express-async-errors';
 
 import BaseRouter from '@src/routes/api';
@@ -48,16 +46,10 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 }
 
 // OPENAPI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 // SWAGGER UI ROUTE
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 // OPENAPI VALIDATOR MIDDELWARE
-// app.use(
-//   OpenApiValidator.middleware({
-//     apiSpec: openapiSpecification as OpenAPIV3.Document, // Path to your OpenAPI specification
-//     validateResponses: true,
-//     validateRequests: true,
-//   }),
-// );
+app.use(openApiMw);
 
 // Add APIs, must be after middleware
 app.use(Paths.Base, BaseRouter);
@@ -65,7 +57,7 @@ app.use(Paths.Base, BaseRouter);
 // Add error handler
 app.use(
 	(
-		err: Error,
+		err: Error | Error,
 		_: Request,
 		res: Response,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -74,6 +66,15 @@ app.use(
 		if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
 			logger.err(err, false);
 		}
+
+		// openapi-validator response error -  to not show the stack trace
+		if (err.message && err.stack?.includes('ResponseValidator._validate')) {
+			return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+				error: 'Error generating the response',
+			});
+		}
+
+		// all other errors
 		let status = HttpStatusCodes.BAD_REQUEST;
 		if (err instanceof RouteError) {
 			status = err.status;
