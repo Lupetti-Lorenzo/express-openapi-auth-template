@@ -27,3 +27,34 @@ async function adminMw(req: Request, res: Response, next: NextFunction) {
 // **** Export Default **** //
 
 export default adminMw;
+
+// **** Define Responses returned by the middleware **** //
+
+/**
+ * @openapi
+ * components:
+ *   responses:
+ *     BadRequestMiddleware:
+ *       description: Bad Request
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               error:
+ *                 type: string
+ *                 description: Usually an error due to token verification.
+ *
+ *     UnauthorizedMiddleware:
+ *       description: Unauthorized
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               error:
+ *                 type: string
+ *                 description: >
+ *                   Error message indicating unauthorized behavior.
+ *                   Define this in a Swagger doc comment for OpenAPI 3.0.0.
+ */

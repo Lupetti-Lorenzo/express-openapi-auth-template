@@ -97,7 +97,7 @@ async function token(req: IReq, res: IRes) {
  *                 type: string
  *                 description: The user's password.
  *     responses:
- *       '201':
+ *       '200':
  *         description: Login successful
  *         content:
  *           application/json:

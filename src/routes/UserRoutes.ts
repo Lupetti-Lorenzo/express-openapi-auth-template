@@ -32,6 +32,10 @@ import { IReq, IRes } from './types/express/misc';
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/User'
+ *       '400':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/BadRequestMiddleware'
  *       '500':
  *         description: Internal Server Error
  */
@@ -69,6 +73,10 @@ async function getAll(_: IReq, res: IRes) {
  *               properties:
  *                 user:
  *                   $ref: '#/components/schemas/User'
+ *       '400':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/BadRequestMiddleware'
  *       '404':
  *         description: User not found
  *         content:

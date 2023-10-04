@@ -25,7 +25,7 @@ const swaggerDefinition = {
 const options: swaggerJSDoc.Options = {
 	swaggerDefinition: swaggerDefinition,
 	// Path files to be processes. for: {openapi: '3.0.0'}
-	apis: ['src/routes/*.ts', 'src/models/*.ts'],
+	apis: ['src/routes/*.ts', 'src/models/*.ts', 'src/routes/middleware/*.ts'],
 };
 
 const specs = swaggerJSDoc(options);
