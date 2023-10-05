@@ -5,3 +5,4 @@ prossime cose da fare:
 frontend
 error handling per redis chiamati in authservice
 redis hash token? 
+aggiornare gli altri env

@@ -78,15 +78,7 @@ async function getAll(_: IReq, res: IRes) {
  *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
  *       '404':
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: User not found
+ *         $ref: '#/components/responses/UserNotFound'
  *       '500':
  *         description: Internal Server Error
  */
@@ -114,10 +106,21 @@ async function getById(req: IReq, res: IRes) {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             properties:
+ *               user:
+ *                 $ref: '#/components/schemas/User'
  *     responses:
  *       '201':
  *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User created
  *       '400':
  *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '401':
@@ -128,7 +131,7 @@ async function getById(req: IReq, res: IRes) {
 async function add(req: IReq<{ user: IUser }>, res: IRes) {
 	const { user } = req.body;
 	await UserService.addOne(user);
-	return res.status(HttpStatusCodes.CREATED).json({ message: 'Utente creato' });
+	return res.status(HttpStatusCodes.CREATED).json({ message: 'User created' });
 }
 
 /**
@@ -148,21 +151,34 @@ async function add(req: IReq<{ user: IUser }>, res: IRes) {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             properties:
+ *               user:
+ *                 $ref: '#/components/schemas/User'
  *     responses:
  *       '200':
  *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User updated successfully
  *       '400':
  *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '404':
+ *         $ref: '#/components/responses/UserNotFound'
  *       '500':
  *         description: Internal Server Error
  */
 async function update(req: IReq<{ user: IUser }>, res: IRes) {
 	const { user } = req.body;
 	await UserService.updateOne(user);
-	return res.status(HttpStatusCodes.OK).end();
+	return res.status(HttpStatusCodes.OK).json({ message: 'User updated successfully' });
 }
 
 /**
@@ -186,17 +202,27 @@ async function update(req: IReq<{ user: IUser }>, res: IRes) {
  *     responses:
  *       '200':
  *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User updated successfully
  *       '400':
  *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '404':
+ *         $ref: '#/components/responses/UserNotFound'
  *       '500':
  *         description: Internal Server Error
  */
 async function delete_(req: IReq, res: IRes) {
 	const id = +req.params.id;
 	await UserService.delete(id);
-	return res.status(HttpStatusCodes.OK).end();
+	return res.status(HttpStatusCodes.OK).json({ message: 'User deleted successfully' });
 }
 
 // **** Export default **** //
@@ -208,3 +234,20 @@ export default {
 	update,
 	delete: delete_,
 } as const;
+
+/**
+ * @openapi
+ * components:
+ *   responses:
+ *     UserNotFound:
+ *       description: User not found
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               error:
+ *                 type: string
+ *                 example: The id provided does not match any user
+ *
+ */

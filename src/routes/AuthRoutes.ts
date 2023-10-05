@@ -34,7 +34,7 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
  *               properties:
  *                 accessToken:
  *                   type: string
- *                   description: The newly generated access token for the authenticated user.
+ *                   example: The newly generated access token for the authenticated user.
  *       '400':
  *         description: Bad Request
  *         content:
@@ -44,7 +44,7 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Error message indicating token validation failure.
+ *                   example: Error message indicating token validation failure.
  *       '404':
  *         description: Not found
  *         content:
@@ -54,7 +54,7 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Refresh token expired or not valid.
+ *                   example: Refresh token expired or not valid.
  *       '500':
  *         description: Internal Server Error
  *     tags:
@@ -106,7 +106,7 @@ async function token(req: IReq, res: IRes) {
  *               properties:
  *                 accessToken:
  *                   type: string
- *                   description: The access token for the authenticated user.
+ *                   example: The access token for the authenticated user.
  *         headers:
  *           Set-Cookie:
  *             schema:
@@ -123,7 +123,7 @@ async function token(req: IReq, res: IRes) {
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Usually an error due to token generation.
+ *                   example: Usually an error due to token generation.
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -133,7 +133,7 @@ async function token(req: IReq, res: IRes) {
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Error message indicating login failure.
+ *                   example: Error message indicating login failure.
  *       '500':
  *         description: Internal Server Error
  *     tags:
@@ -182,7 +182,7 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
  *               properties:
  *                 error:
  *                   type: string
- *                   description: Usually an error due to token expired or not privided.
+ *                   example: Usually an error due to token expired or not privided.
  *       '500':
  *         description: Internal Server Error
  *     tags:
