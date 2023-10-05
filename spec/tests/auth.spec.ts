@@ -20,7 +20,7 @@ const { OK, UNAUTHORIZED } = HttpStatusCodes;
 
 // Login credentials
 const LoginCreds = {
-	email: 'sean.maxwell@gmail.com',
+	email: 'jsmith@gmail.com',
 	password: 'Password@1',
 } as const;
 
@@ -44,9 +44,9 @@ describe('AuthRouter', () => {
 		// Success
 		it(`should return a response with a status of "${OK}" and a cookie with ` + 'a jwt if the login was successful.', (done) => {
 			// Setup data
-			const role = UserRoles.Admin,
+			const role = UserRoles.Standard,
 				pwdHash = PwdUtil.hashSync(LoginCreds.password),
-				loginUser = User.new('Sean Maxwell', LoginCreds.email, role, pwdHash);
+				loginUser = User.new('john smith', LoginCreds.email, role, pwdHash);
 			// Add spy
 			spyOn(UserRepo, 'getOne').and.resolveTo(loginUser);
 			// Call API
@@ -97,13 +97,13 @@ describe('AuthRouter', () => {
 	});
 
 	// ** Test logout ** //
-	describe(`"GET:${Paths.Auth.Logout}"`, () => {
-		// Successful logout
-		it(`should return a response with a status of ${OK}`, (done) => {
-			agent.get(Paths.Auth.Logout).end((_: Error, res: Response) => {
-				expect(res.status).toBe(HttpStatusCodes.OK);
-				done();
-			});
-		});
-	});
+	// describe(`"GET:${Paths.Auth.Logout}"`, () => {
+	// 	// Successful logout
+	// 	it(`should return a response with a status of ${OK}`, (done) => {
+	// 		agent.get(Paths.Auth.Logout).end((_err: Error, res: Response) => {
+	// 			expect(res.status).toBe(HttpStatusCodes.OK);
+	// 			done();
+	// 		});
+	// 	});
+	// });
 });

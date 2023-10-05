@@ -31,8 +31,7 @@ function login(beforeAgent: SuperTest<Test>, done: (arg: string) => void) {
 		.type('form')
 		.send(LoginCreds)
 		.end((_: Error, res: Response) => {
-			const cookie = res.headers['set-cookie'][0];
-			return done(cookie);
+			return done(res.body.accessToken || '');
 		});
 }
 

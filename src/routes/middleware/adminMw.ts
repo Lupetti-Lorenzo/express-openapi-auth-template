@@ -6,7 +6,6 @@ import { Request, Response, NextFunction } from 'express';
 
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 
-// import SessionUtil from '@src/util/SessionUtil';
 import TokenUtil from '@src/util/TokenUtil';
 import { UserRoles } from '@src/models/User';
 import { USER_UNAUTHORIZED_ERR } from '@src/constants/ErrorMessages';

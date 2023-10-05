@@ -1,6 +1,5 @@
 import supertest, { SuperTest, Test, Response } from 'supertest';
 import { defaultErrMsg as ValidatorErr } from 'jet-validator';
-import insertUrlParams from 'inserturlparams';
 
 import app from '@src/server';
 
@@ -33,20 +32,19 @@ const DummyUserData = {
 // **** Tests **** //
 
 describe('UserRouter', () => {
-	let agent: SuperTest<Test>, jwtCookie: string;
-
+	let agent: SuperTest<Test>, accessToken: string;
 	// Run before all tests
 	beforeAll((done) => {
 		agent = supertest.agent(app);
-		login(agent, (cookie: string) => {
-			jwtCookie = cookie;
+		login(agent, (token: string) => {
+			accessToken = token;
 			done();
 		});
 	});
 
 	// ** Get all users ** //
 	describe(`"GET:${Paths.Users.Get}"`, () => {
-		const callApi = () => agent.get(Paths.Users.Get).set('Cookie', jwtCookie);
+		const callApi = () => agent.get(Paths.Users.Get).set('Authorization', `Bearer ${accessToken}`);
 
 		// Success
 		it(
@@ -71,7 +69,8 @@ describe('UserRouter', () => {
 	describe(`"POST:${Paths.Users.Add}"`, () => {
 		const ERROR_MSG = `${ValidatorErr}"user".`;
 
-		const callApi = (reqBody: TReqBody) => agent.post(Paths.Users.Add).set('Cookie', jwtCookie).type('form').send(reqBody);
+		const callApi = (reqBody: TReqBody) =>
+			agent.post(Paths.Users.Add).set('Authorization', `Bearer ${accessToken}`).send(reqBody);
 
 		// Test add user success
 		it(`should return a status code of "${CREATED}" if the request was ` + 'successful.', (done) => {
@@ -105,7 +104,8 @@ describe('UserRouter', () => {
 	describe(`"PUT:${Paths.Users.Update}"`, () => {
 		const ERROR_MSG = `${ValidatorErr}"user".`;
 
-		const callApi = (reqBody: TReqBody) => agent.put(Paths.Users.Update).set('Cookie', jwtCookie).type('form').send(reqBody);
+		const callApi = (reqBody: TReqBody) =>
+			agent.put(Paths.Users.Update).set('Authorization', `Bearer ${accessToken}`).send(reqBody);
 
 		// Success
 		it(`should return a status code of "${OK}" if the request was successful.`, (done) => {
@@ -155,7 +155,10 @@ describe('UserRouter', () => {
 	describe(`"DELETE:${Paths.Users.Delete}"`, () => {
 		const VALIDATOR_ERR = `${ValidatorErr}"id".`;
 
-		const callApi = (id: number) => agent.delete(insertUrlParams(Paths.Users.Delete, { id })).set('Cookie', jwtCookie);
+		const callApi = (id: number) =>
+			agent
+				.delete(Paths.Users.Delete.replace(':id', String(id))) // Replace :id with the actual id
+				.set('Authorization', `Bearer ${accessToken}`);
 
 		// Success
 		it(`should return a status code of "${OK}" if the request was successful.`, (done) => {

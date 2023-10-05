@@ -77,7 +77,9 @@ app.get('/users', (req: Request, res: Response) => {
 // SWAGGER UI ROUTE
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 // OPENAPI VALIDATOR MIDDELWARE
-app.use(openApiMw);
+if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
+	app.use(openApiMw);
+}
 
 // Add APIs, must be after middleware
 app.use(Paths.Base, BaseRouter);

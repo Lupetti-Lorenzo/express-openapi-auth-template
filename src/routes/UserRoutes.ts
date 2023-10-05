@@ -209,7 +209,7 @@ async function update(req: IReq<{ user: IUser }>, res: IRes) {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: User deleted successfully
+ *                   example: User updated successfully
  *       '400':
  *         $ref: '#/components/responses/BadRequestMiddleware'
  *       '401':
