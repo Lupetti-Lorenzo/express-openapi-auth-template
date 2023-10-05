@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
 import adminMw from './middleware/adminMw';
-// import userMw from './middleware/userMw';
 import Paths from '../constants/Paths';
 import AuthRoutes from './AuthRoutes';
 import UserRoutes from './UserRoutes';
+import HealthRoutes from './HealthRoutes';
 
 // **** Variables **** //
 
@@ -46,8 +46,14 @@ userRouter.put(Paths.Users.Update, UserRoutes.update);
 userRouter.delete(Paths.Users.Delete, UserRoutes.delete);
 
 // Add UserRouter
-// apiRouter.use(Paths.Users.Base, userRouter);
 apiRouter.use(Paths.Users.Base, adminMw, userRouter);
+
+// **** Health Check **** //
+const healthRouter = Router();
+
+healthRouter.get(Paths.HealthCheck, HealthRoutes.healthcheck);
+// add healthRouter
+apiRouter.use(healthRouter);
 
 // **** Export default **** //
 

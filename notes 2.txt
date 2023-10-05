@@ -3,7 +3,5 @@ Password@1
 
 prossime cose da fare:
 
-aggiungere health check endpoint 
-
 error handling per redis chiamati in authservice
 redis hash token?

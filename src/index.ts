@@ -5,7 +5,7 @@ import logger from 'jet-logger';
 import EnvVars from '@src/constants/EnvVars';
 import app from './server';
 import { Socket } from 'net';
-import RedisRepo from './repos/RedisRepo';
+// import RedisRepo from './repos/RedisRepo';
 
 // **** Run **** //
 
@@ -35,6 +35,9 @@ function shutDown() {
 
 	server.close(() => {
 		logger.info('Closed out remaining connections');
+		// close redris client
+		// RedisRepo.closeConnection().then(() => logger.info('<<<< Redis connection closed >>>>.'));
+
 		process.exit(0);
 	});
 
@@ -42,9 +45,8 @@ function shutDown() {
 		logger.err('Could not close connections in time, forcefully shutting down');
 		process.exit(1);
 	}, 10000);
+
 	// close connections
 	connections.forEach((curr) => curr.end());
 	setTimeout(() => connections.forEach((curr) => curr.destroy()), 5000);
-	// close redris client
-	RedisRepo.closeConnection();
 }
