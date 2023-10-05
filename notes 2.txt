@@ -4,4 +4,4 @@ Password@1
 prossime cose da fare:
 frontend
 error handling per redis chiamati in authservice
-redis hash token?
+redis hash token? 
