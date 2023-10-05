@@ -18,64 +18,6 @@ export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
 
 /**
  * @openapi
- * /auth/token:
- *   get:
- *     summary: Generate a new access token from a valid refresh token inside cookies.
- *     description: |
- *       This endpoint checks if the provided refresh token is valid, and if so,
- *       generates a new access token associated with the user's data contained in the refresh token.
- *     responses:
- *       '200':
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 accessToken:
- *                   type: string
- *                   example: The newly generated access token for the authenticated user.
- *       '400':
- *         description: Bad Request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Error message indicating token validation failure.
- *       '404':
- *         description: Not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Refresh token expired or not valid.
- *       '500':
- *         description: Internal Server Error
- *     tags:
- *       - Authentication
- */
-
-/**
- * Request a new access token.
- */
-
-async function token(req: IReq, res: IRes) {
-	const refreshTokenData = await AuthService.validateRefreshToken(req);
-	// if it is valid, generate a new access token and return it
-	// add salt to get different access tokens every time
-	refreshTokenData.salt = getRandomInt();
-	// return success message and add the access token to the response
-	return await AuthService.addAccessToken(res, refreshTokenData);
-}
-
-/**
- * @openapi
  * /auth/login:
  *   post:
  *     summary: User login
@@ -106,7 +48,7 @@ async function token(req: IReq, res: IRes) {
  *               properties:
  *                 accessToken:
  *                   type: string
- *                   example: The access token for the authenticated user.
+ *                   description: The access token for the authenticated user.
  *         headers:
  *           Set-Cookie:
  *             schema:
@@ -123,7 +65,8 @@ async function token(req: IReq, res: IRes) {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Usually an error due to token generation.
+ *                   description: Usually an error due to token generation.
+ *                   example: Token generation failed.
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -133,7 +76,8 @@ async function token(req: IReq, res: IRes) {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Error message indicating login failure.
+ *                   description: Error message indicating login failure.
+ *                   example: Login failed. Please check your email and password.
  *       '500':
  *         description: Internal Server Error
  *     tags:
@@ -182,7 +126,8 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Usually an error due to token expired or not privided.
+ *                   description: Usually an error due to token expired or not privided.
+ *                   example: token not provided
  *       '500':
  *         description: Internal Server Error
  *     tags:
@@ -194,6 +139,66 @@ async function login(req: IReq<ILoginReq>, res: IRes) {
 async function logout(req: IReq, res: IRes) {
 	// remove refresh token from local database and clear cookies
 	return await AuthService.logout(req, res);
+}
+
+/**
+ * @openapi
+ * /auth/token:
+ *   get:
+ *     summary: Generate a new access token from a valid refresh token inside cookies.
+ *     description: |
+ *       This endpoint checks if the provided refresh token is valid, and if so,
+ *       generates a new access token associated with the user's data contained in the refresh token.
+ *     responses:
+ *       '200':
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: The newly generated access token for the authenticated user.
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Refresh token provided is malformed.
+ *                   description: Usually an error due to token expired or not privided.
+ *       '404':
+ *         description: Not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Refresh token expired or not valid.
+ *                   example: Refresh token expired or not valid
+ *       '500':
+ *         description: Internal Server Error
+ *     tags:
+ *       - Authentication
+ */
+
+/**
+ * Request a new access token.
+ */
+
+async function token(req: IReq, res: IRes) {
+	const refreshTokenData = await AuthService.validateRefreshToken(req);
+	// if it is valid, generate a new access token and return it
+	// add salt to get different access tokens every time
+	refreshTokenData.salt = getRandomInt();
+	// return success message and add the access token to the response
+	return await AuthService.addAccessToken(res, refreshTokenData);
 }
 
 // **** Export default **** //

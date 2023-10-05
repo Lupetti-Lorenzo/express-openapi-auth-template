@@ -43,7 +43,8 @@ export default adminMw;
  *             properties:
  *               error:
  *                 type: string
- *                 example: Usually an error due to token verification.
+ *                 description: Usually an error due to token verification.
+ *                 example: JSON-web-token validation failed
  *
  *     UnauthorizedMiddleware:
  *       description: Unauthorized
@@ -54,7 +55,8 @@ export default adminMw;
  *             properties:
  *               error:
  *                 type: string
- *                 example: >
+ *                 description: >
  *                   Error message indicating unauthorized behavior.
  *                   Define this in a Swagger doc comment for OpenAPI 3.0.0.
+ *                 example: User not authorized to perform this action
  */

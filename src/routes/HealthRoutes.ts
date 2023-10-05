@@ -21,6 +21,7 @@ import { Request, Response } from 'express';
  *                 message:
  *                   type: string
  *                   description: Health check message.
+ *                   example: Ok
  *                 date:
  *                   type: string
  *                   format: date-time

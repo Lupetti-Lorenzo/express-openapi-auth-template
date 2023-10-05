@@ -1,1 +1,33 @@
-{"users":[{"name":"Sean Maxwell","email":"sean.maxwell@gmail.com","pwdHash":"$2b$12$1mE2OI9hMS/rgH9Mi0s85OM2V5gzm7aF3gJIWH1y0S1MqVBueyjsy","role":1,"id":159123164363},{"name":"Gordan Freeman","email":"gordan.freeman@halflife.com","pwdHash":"$2b$12$1mE2OI9hMS/rgH9Mi0s85OM2V5gzm7aF3gJIWH1y0S1MqVBueyjsy","role":0,"id":906524522143},{"id":943498627832,"name":"lo","email":"lu@lu","role":0},{"id":925596288866,"name":"lo","email":"lu@lu","role":0},{"id":20840431864,"name":"lo","email":"lu@lu","role":0},{"id":138357108566,"name":"lorens","email":"lu@lu","role":1,"password":"$2b$12$1mE2OI9hMS/rgH9Mi0s85OM2V5gzm7aF3gJIWH1y0S1MqVBueyjsy"},{"id":544315668084,"name":"nome","email":"email","role":0},{"id":518596723178,"name":"nome","email":"email","role":0},{"id":286464833949,"name":"nome","email":"email","role":0},{"id":442334456627,"name":"nome","email":"email","role":0}]}
+{
+	"users": [
+		{
+			"name": "Sean Maxwell",
+			"email": "sean.maxwell@gmail.com",
+			"pwdHash": "$2b$12$1mE2OI9hMS/rgH9Mi0s85OM2V5gzm7aF3gJIWH1y0S1MqVBueyjsy",
+			"role": 1,
+			"id": 159123164363
+		},
+		{
+			"name": "Sean Maxwell",
+			"email": "sean.maxwell@gmail.com",
+			"pwdHash": "$2b$12$1mE2OI9hMS/rgH9Mi0s85OM2V5gzm7aF3gJIWH1y0S1MqVBueyjsy",
+			"role": 1,
+			"id": 159123164365
+		},
+		{ "id": 906524522143, "name": "Gordan Freemannn", "email": "gordan.freeman@halflife.com", "role": 0 },
+		{ "id": 943498627832, "name": "lo", "email": "lu@lu", "role": 0 },
+		{ "id": 925596288866, "name": "lo", "email": "lu@lu", "role": 0 },
+		{ "id": 20840431864, "name": "lo", "email": "lu@lu", "role": 0 },
+		{
+			"id": 138357108566,
+			"name": "lorens",
+			"email": "lu@lu",
+			"role": 1,
+			"password": "$2b$12$1mE2OI9hMS/rgH9Mi0s85OM2V5gzm7aF3gJIWH1y0S1MqVBueyjsy"
+		},
+		{ "id": 544315668084, "name": "nome", "email": "email", "role": 0 },
+		{ "id": 518596723178, "name": "nome", "email": "email", "role": 0 },
+		{ "id": 286464833949, "name": "nome", "email": "email", "role": 0 },
+		{ "id": 442334456627, "name": "nome", "email": "email", "role": 0 }
+	]
+}

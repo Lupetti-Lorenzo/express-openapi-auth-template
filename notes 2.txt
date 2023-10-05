@@ -2,7 +2,9 @@ sean.maxwell@gmail.com
 Password@1
 
 prossime cose da fare:
-frontend
+TEST
 error handling per redis chiamati in authservice
-redis hash token? 
+redis hash token? si, è una password
 aggiornare gli altri env
+opzioni tipo searchbar per swagger 
+rimettere gli errori nei file corrispondenti e aggiornare imports

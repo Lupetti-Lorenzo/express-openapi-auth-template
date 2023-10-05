@@ -33,9 +33,9 @@ import { IReq, IRes } from './types/express/misc';
  *                   items:
  *                     $ref: '#/components/schemas/User'
  *       '400':
- *         $ref: '#/components/responses/UnauthorizedMiddleware'
- *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '500':
  *         description: Internal Server Error
  */
@@ -74,9 +74,9 @@ async function getAll(_: IReq, res: IRes) {
  *                 user:
  *                   $ref: '#/components/schemas/User'
  *       '400':
- *         $ref: '#/components/responses/UnauthorizedMiddleware'
- *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '404':
  *         $ref: '#/components/responses/UserNotFound'
  *       '500':
@@ -122,9 +122,9 @@ async function getById(req: IReq, res: IRes) {
  *                   type: string
  *                   example: User created
  *       '400':
- *         $ref: '#/components/responses/UnauthorizedMiddleware'
- *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '500':
  *         description: Internal Server Error
  */
@@ -167,9 +167,9 @@ async function add(req: IReq<{ user: IUser }>, res: IRes) {
  *                   type: string
  *                   example: User updated successfully
  *       '400':
- *         $ref: '#/components/responses/UnauthorizedMiddleware'
- *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '404':
  *         $ref: '#/components/responses/UserNotFound'
  *       '500':
@@ -209,11 +209,11 @@ async function update(req: IReq<{ user: IUser }>, res: IRes) {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: User updated successfully
+ *                   example: User deleted successfully
  *       '400':
- *         $ref: '#/components/responses/UnauthorizedMiddleware'
- *       '401':
  *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
  *       '404':
  *         $ref: '#/components/responses/UserNotFound'
  *       '500':
