@@ -16,7 +16,7 @@ import { IReq, IRes } from './types/express/misc';
  * /users/all:
  *   get:
  *     tags:
- *     - user
+ *     - User
  *     summary: Retrieve all users
  *     description: "This endpoint retrieves all users from the database."
  *     operationId: getAllUsers
@@ -54,7 +54,7 @@ async function getAll(_: IReq, res: IRes) {
  * /users/{id}:
  *   get:
  *     tags:
- *     - user
+ *     - User
  *     summary: Get a user by ID
  *     parameters:
  *       - in: path
@@ -100,6 +100,31 @@ async function getById(req: IReq, res: IRes) {
 /**
  * Add one user.
  */
+/**
+ * @openapi
+ *
+ * /users/add:
+ *   post:
+ *     tags:
+ *     - User
+ *     summary: Add a user
+ *     requestBody:
+ *       description: User object to be added.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       '201':
+ *         description: User created successfully
+ *       '400':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '500':
+ *         description: Internal Server Error
+ */
 async function add(req: IReq<{ user: IUser }>, res: IRes) {
 	const { user } = req.body;
 	await UserService.addOne(user);
@@ -109,6 +134,31 @@ async function add(req: IReq<{ user: IUser }>, res: IRes) {
 /**
  * Update one user.
  */
+/**
+ * @openapi
+ *
+ * /users/update:
+ *   put:
+ *     tags:
+ *     - User
+ *     summary: Update a user
+ *     requestBody:
+ *       description: User object to be updated.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       '200':
+ *         description: User updated successfully
+ *       '400':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '500':
+ *         description: Internal Server Error
+ */
 async function update(req: IReq<{ user: IUser }>, res: IRes) {
 	const { user } = req.body;
 	await UserService.updateOne(user);
@@ -117,6 +167,31 @@ async function update(req: IReq<{ user: IUser }>, res: IRes) {
 
 /**
  * Delete one user.
+ */
+/**
+ * @openapi
+ *
+ * /users/{id}:
+ *   delete:
+ *     tags:
+ *     - User
+ *     summary: Delete a user by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the user to delete.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: User deleted successfully
+ *       '400':
+ *         $ref: '#/components/responses/UnauthorizedMiddleware'
+ *       '401':
+ *         $ref: '#/components/responses/BadRequestMiddleware'
+ *       '500':
+ *         description: Internal Server Error
  */
 async function delete_(req: IReq, res: IRes) {
 	const id = +req.params.id;

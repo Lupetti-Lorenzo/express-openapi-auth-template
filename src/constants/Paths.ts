@@ -16,7 +16,7 @@ export default {
 		GetById: '/:id',
 		Add: '/add',
 		Update: '/update',
-		Delete: '/delete/:id',
+		Delete: '/:id',
 	},
 	HealthCheck: '/health',
 } as const;
