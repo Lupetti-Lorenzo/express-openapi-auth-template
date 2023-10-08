@@ -5,7 +5,7 @@ import app from '@src/server';
 import UserRepo from '@src/repos/UserRepo';
 import PwdUtil from '@src/util/PwdUtil';
 import User, { UserRoles } from '@src/models/User';
-import { Errors } from '@src/services/AuthService';
+import { AuthErrors } from '@src/services/AuthService';
 
 import EnvVars from '@src/constants/EnvVars';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
@@ -37,8 +37,6 @@ describe('AuthRouter', () => {
 
 	// ** Test login ** //
 	describe(`"POST:${Paths.Auth.Login}"`, () => {
-		const EMAIL_NOT_FOUND_ERR = Errors.EmailNotFound(LoginCreds.email);
-
 		const callApi = (reqBody: TReqBody) => agent.post(Paths.Auth.Login).type('form').send(reqBody);
 
 		// Success
@@ -58,10 +56,10 @@ describe('AuthRouter', () => {
 			});
 		});
 
-		// Email not found error
+		// email not found - unauth
 		it(
 			`should return a response with a status of "${UNAUTHORIZED}" and a ` +
-				`json with an error message of "${EMAIL_NOT_FOUND_ERR}" if the email ` +
+				`json with an error message of "${AuthErrors.Unauth}" if the email ` +
 				'was not found.',
 			(done) => {
 				// Spy
@@ -69,7 +67,7 @@ describe('AuthRouter', () => {
 				// Call
 				callApi(LoginCreds).end((_: Error, res: Response) => {
 					expect(res.status).toBe(UNAUTHORIZED);
-					expect(res.body.error).toBe(EMAIL_NOT_FOUND_ERR);
+					expect(res.body.error).toBe(AuthErrors.Unauth);
 					done();
 				});
 			}
@@ -78,7 +76,7 @@ describe('AuthRouter', () => {
 		// Password failed
 		it(
 			`should return a response with a status of "${UNAUTHORIZED}" and a ` +
-				`json with the error "${Errors.Unauth}" if the password failed.`,
+				`json with the error "${AuthErrors.Unauth}" if the password failed.`,
 			(done) => {
 				// Setup data
 				const role = UserRoles.Standard,
@@ -89,7 +87,7 @@ describe('AuthRouter', () => {
 				// Call API
 				callApi(LoginCreds).end((_: Error, res: Response) => {
 					expect(res.status).toBe(UNAUTHORIZED);
-					expect(res.body.error).toBe(Errors.Unauth);
+					expect(res.body.error).toBe(AuthErrors.Unauth);
 					done();
 				});
 			}

@@ -13,7 +13,7 @@ const apiCall = async (path, options) => {
 	const res = await fetch(path, options);
 	console.log(res.status);
 	if (res.status == 400) {
-		console.log('Bad request');
+		// console.log('Bad request');
 		// try to refresh the token
 		const resToken = await fetch('/api/auth/token');
 		if (resToken.status == 400) {

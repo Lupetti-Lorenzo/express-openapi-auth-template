@@ -6,7 +6,8 @@ import jsonwebtoken from 'jsonwebtoken';
 import EnvVars from '../constants/EnvVars';
 import { ISessionUser, TSessionData } from '@src/models/User';
 import { RouteError } from '@src/other/classes';
-import { TOKEN_ERRORS } from '@src/constants/ErrorMessages';
+
+import { AuthErrors } from '@src/services/AuthService';
 
 // **** Variables **** //
 
@@ -26,7 +27,7 @@ async function getRefreshTokenSession(req: Request): Promise<ISessionUser> {
 	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeRefreshTokenCookies);
 	// check if is the correct type
 	if (!accessTokenData || typeof accessTokenData !== 'object')
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, TOKEN_ERRORS.Validation);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, AuthErrors.Validation);
 	// return the session
 	return extractUserInfo(accessTokenData);
 }
@@ -55,7 +56,7 @@ async function getAccessTokenSession(req: Request): Promise<ISessionUser> {
 	const accessTokenData = await getDecodedToken<TSessionData>(req, decodeAccessTokenHeaders);
 	// check if is the correct type
 	if (!accessTokenData || typeof accessTokenData !== 'object')
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, TOKEN_ERRORS.Validation);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, AuthErrors.Validation);
 	// return the session
 	return extractUserInfo(accessTokenData);
 }
@@ -79,7 +80,7 @@ function _sign(data: string | object | Buffer, secret: string, Options: object =
 function _decode<T>(jwt: string, secret: string): Promise<string | undefined | T> {
 	return new Promise((res, rej) => {
 		jsonwebtoken.verify(jwt, secret, (err, decoded) => {
-			return err ? rej(TOKEN_ERRORS.Validation) : res(decoded as T);
+			return err ? rej(AuthErrors.Validation) : res(decoded as T);
 		});
 	});
 }

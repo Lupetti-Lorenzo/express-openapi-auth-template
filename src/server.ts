@@ -74,10 +74,10 @@ app.get('/users', (req: Request, res: Response) => {
 // *** API Code*** //
 
 // OPENAPI
-// SWAGGER UI ROUTE
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
-// OPENAPI VALIDATOR MIDDELWARE
 if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
+	// SWAGGER UI ROUTE
+	app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+	// OPENAPI VALIDATOR MIDDELWARE
 	app.use(openApiMw);
 }
 

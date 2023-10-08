@@ -6,7 +6,7 @@ import app from '@src/server';
 import UserRepo from '@src/repos/UserRepo';
 import User from '@src/models/User';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { USER_NOT_FOUND_ERR } from '@src/constants/ErrorMessages';
+import { UserErrors } from '@src/services/UserService';
 
 import login from '../support/login';
 import Paths from 'spec/support/Paths';
@@ -138,13 +138,13 @@ describe('UserRouter', () => {
 		// User not found
 		it(
 			'should return a JSON object with the error message of ' +
-				`"${USER_NOT_FOUND_ERR}" and a status code of "${NOT_FOUND}" if the id ` +
+				`"${UserErrors.NotFound}" and a status code of "${NOT_FOUND}" if the id ` +
 				'was not found.',
 			(done) => {
 				// Call api
 				callApi(DummyUserData).end((_: Error, res: Response) => {
 					expect(res.status).toBe(NOT_FOUND);
-					expect(res.body.error).toBe(USER_NOT_FOUND_ERR);
+					expect(res.body.error).toBe(UserErrors.NotFound);
 					done();
 				});
 			}
@@ -176,12 +176,12 @@ describe('UserRouter', () => {
 		// User not found
 		it(
 			'should return a JSON object with the error message of ' +
-				`"${USER_NOT_FOUND_ERR}" and a status code of "${NOT_FOUND}" if the id ` +
+				`"${UserErrors.NotFound}" and a status code of "${NOT_FOUND}" if the id ` +
 				'was not found.',
 			(done) => {
 				callApi(-1).end((_: Error, res: Response) => {
 					expect(res.status).toBe(NOT_FOUND);
-					expect(res.body.error).toBe(USER_NOT_FOUND_ERR);
+					expect(res.body.error).toBe(UserErrors.NotFound);
 					done();
 				});
 			}

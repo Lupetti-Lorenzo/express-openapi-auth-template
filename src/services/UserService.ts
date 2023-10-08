@@ -2,11 +2,14 @@ import UserRepo from '@src/repos/UserRepo';
 import { IUser } from '@src/models/User';
 import { RouteError } from '@src/other/classes';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { USER_NOT_FOUND_ERR } from '@src/constants/ErrorMessages';
 
 // **** Variables **** //
 
 // **** Functions **** //
+
+export const UserErrors = {
+	NotFound: 'User not found',
+};
 
 /**
  * Get all users.
@@ -22,7 +25,7 @@ async function getById(id: number): Promise<IUser | null> {
 	if (!id) throw new RouteError(HttpStatusCodes.BAD_REQUEST, 'The following parameter was missing or invalid: "id".');
 	const persists = await UserRepo.persists(id);
 	if (!persists) {
-		throw new RouteError(HttpStatusCodes.NOT_FOUND, USER_NOT_FOUND_ERR);
+		throw new RouteError(HttpStatusCodes.NOT_FOUND, UserErrors.NotFound);
 	}
 	// Return user
 	return UserRepo.getById(id);
@@ -43,7 +46,7 @@ async function updateOne(user: IUser): Promise<void> {
 	if (!user) throw new RouteError(HttpStatusCodes.BAD_REQUEST, 'The following parameter was missing or invalid: "user".');
 	const persists = await UserRepo.persists(user.id);
 	if (!persists) {
-		throw new RouteError(HttpStatusCodes.NOT_FOUND, USER_NOT_FOUND_ERR);
+		throw new RouteError(HttpStatusCodes.NOT_FOUND, UserErrors.NotFound);
 	}
 	// Return user
 	return UserRepo.update(user);
@@ -54,10 +57,9 @@ async function updateOne(user: IUser): Promise<void> {
  */
 async function _delete(id: number): Promise<void> {
 	if (!id) throw new RouteError(HttpStatusCodes.BAD_REQUEST, 'The following parameter was missing or invalid: "id".');
-
 	const persists = await UserRepo.persists(id);
 	if (!persists) {
-		throw new RouteError(HttpStatusCodes.NOT_FOUND, USER_NOT_FOUND_ERR);
+		throw new RouteError(HttpStatusCodes.NOT_FOUND, UserErrors.NotFound);
 	}
 	// Delete user
 	return UserRepo.delete(id);

@@ -14,12 +14,9 @@ import EnvVars from '@src/constants/EnvVars';
 // **** Variables **** //
 
 // Errors
-export const Errors = {
-	Unauth: 'Unauthorized',
-	EmailNotFound(email: string) {
-		return `User with email "${email}" not found`;
-	},
-	ParamFalsey: 'Param is falsey',
+export const AuthErrors = {
+	Unauth: 'User not authorized to perform this action',
+	ParamFalsey: 'The parameter provided is not valid',
 	Validation: 'JSON-web-token validation failed.',
 } as const;
 
@@ -41,7 +38,7 @@ async function login(email: string, password: string): Promise<IUser> {
 	// Fetch user
 	const user = await UserRepo.getOne(email);
 	if (!user) {
-		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, Errors.EmailNotFound(email));
+		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, AuthErrors.Unauth);
 	}
 	// Check password
 	const hash = user.pwdHash ?? '',
@@ -49,7 +46,7 @@ async function login(email: string, password: string): Promise<IUser> {
 	if (!pwdPassed) {
 		// If password failed, wait 500ms this will increase security
 		await tick(500);
-		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, Errors.Unauth);
+		throw new RouteError(HttpStatusCodes.UNAUTHORIZED, AuthErrors.Unauth);
 	}
 	// Return
 	return user;
@@ -71,7 +68,7 @@ async function logout(req: IReq, res: IRes): Promise<IRes> {
  */
 async function addAccessToken(res: IRes, data: ISessionUser): Promise<IRes> {
 	if (!res || !data) {
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, AuthErrors.ParamFalsey);
 	}
 	// Setup JWT access token
 	const accessToken = await TokenUtil._sign(data, EnvVars.Jwt.Secret, AccessTokenOptions);
@@ -84,7 +81,7 @@ async function addAccessToken(res: IRes, data: ISessionUser): Promise<IRes> {
  */
 async function addRefreshToken(res: IRes, data: ISessionUser): Promise<IRes> {
 	if (!res || !data || typeof data !== 'object') {
-		throw new RouteError(HttpStatusCodes.BAD_REQUEST, Errors.ParamFalsey);
+		throw new RouteError(HttpStatusCodes.BAD_REQUEST, AuthErrors.ParamFalsey);
 	}
 	// Setup JWT
 	const jwt = await TokenUtil._sign(data, EnvVars.Jwt.RefreshSecret, RefreshTokenOptions),

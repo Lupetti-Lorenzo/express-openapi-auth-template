@@ -8,7 +8,8 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 
 import TokenUtil from '@src/util/TokenUtil';
 import { UserRoles } from '@src/models/User';
-import { USER_UNAUTHORIZED_ERR } from '@src/constants/ErrorMessages';
+
+import { AuthErrors } from '@src/services/AuthService';
 
 async function adminMw(req: Request, res: Response, next: NextFunction) {
 	// Get session data
@@ -19,7 +20,7 @@ async function adminMw(req: Request, res: Response, next: NextFunction) {
 		return next();
 		// Return an unauth error if user is not an admin
 	} else {
-		return res.status(HttpStatusCodes.UNAUTHORIZED).json({ error: USER_UNAUTHORIZED_ERR });
+		return res.status(HttpStatusCodes.UNAUTHORIZED).json({ error: AuthErrors.Unauth });
 	}
 }
 

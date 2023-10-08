@@ -2,9 +2,6 @@ sean.maxwell@gmail.com
 Password@1
 
 prossime cose da fare:
-FInire test: Auth, getbyid e health
-error handling per redis chiamati in authservice
+FInire test: Auth, getbyid e health - aggiustare gli errori di auth - li ho cambiati
 redis hash token? si, è una password
-aggiornare gli altri env
 opzioni tipo searchbar per swagger 
-rimettere gli errori nei file corrispondenti e aggiornare imports - anche errori di validation dei test
