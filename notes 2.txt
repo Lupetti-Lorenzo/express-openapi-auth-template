@@ -1,7 +1,0 @@
-sean.maxwell@gmail.com
-Password@1
-
-prossime cose da fare:
-FInire test: Auth, getbyid e health - aggiustare gli errori di auth - li ho cambiati
-redis hash token? si, è una password
-opzioni tipo searchbar per swagger 

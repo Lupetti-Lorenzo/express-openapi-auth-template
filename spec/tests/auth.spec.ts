@@ -95,6 +95,7 @@ describe('AuthRouter', () => {
 	});
 
 	// ** Test logout ** //
+	// right now id does not work, needs to be logged in first
 	// describe(`"GET:${Paths.Auth.Logout}"`, () => {
 	// 	// Successful logout
 	// 	it(`should return a response with a status of ${OK}`, (done) => {

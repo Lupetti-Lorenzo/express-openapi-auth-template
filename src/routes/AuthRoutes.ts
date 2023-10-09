@@ -12,8 +12,6 @@ interface ILoginReq {
 }
 
 // **** Variables **** //
-export const TOKEN_MALFORMED = 'Refresh token provided is malformed.';
-
 // **** Functions **** //
 
 /**
@@ -170,9 +168,9 @@ async function logout(req: IReq, res: IRes) {
  *                 error:
  *                   type: string
  *                   example: Refresh token provided is malformed.
- *                   description: Usually an error due to token expired or not privided.
- *       '404':
- *         description: Not found
+ *                   description: Usually an error due to token manipulation.
+ *       '401':
+ *         description: Unauthorized
  *         content:
  *           application/json:
  *             schema:
