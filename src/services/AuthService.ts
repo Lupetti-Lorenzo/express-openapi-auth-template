@@ -23,11 +23,11 @@ export const AuthErrors = {
 
 // Options
 const AccessTokenOptions = {
-	expiresIn: EnvVars.Jwt.Exp,
+	expiresIn: String(Number(EnvVars.Jwt.Exp) * 60000),
 };
 
 const RefreshTokenOptions = {
-	expiresIn: String(EnvVars.CookieProps.Options.maxAge),
+	expiresIn: String(EnvVars.CookieProps.Options.maxAge * 60000),
 };
 
 // **** Functions **** //
