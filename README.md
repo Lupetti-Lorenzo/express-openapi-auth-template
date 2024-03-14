@@ -1,7 +1,7 @@
 <div align="center">
   <!-- <img src="static/logo512x512.png" alt="Your Project Logo" width="160"> -->
   <h1>Express Auth OpenApi TS</h1>
-  <p>A production ready template to start your NodeJS APIs</p>
+  <p>A template to start your NodeJS Express APIs</p>
 </div>
 <br>
 
